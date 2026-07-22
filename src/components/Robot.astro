@@ -1,0 +1,417 @@
+---
+/**
+ * A pixel-art robot that lives next to the name in the header and walks to the pointer, step by step.
+ *
+ * - Home: sits in the header and turns to face the pointer; click it for a happy hop.
+ * - Roaming (mouse + hover devices, wide screens, no reduced motion): when the pointer moves away it
+ *   looks up (alert), then walks over in 12px steps with a two-frame walk cycle per direction and
+ *   stops just short of the pointer. It ignores the mouse while roaming (pointer-events: none).
+ * - Smiles when it's next to the pointer and you hover a link, falls asleep after a while, walks home
+ *   when the pointer leaves the window, and remembers where it was across page loads.
+ * - While it's out, a little charging dock with a blinking bolt holds its spot; clicking the dock calls it home.
+ * - Touch or reduced motion: stays home and only turns to face the pointer.
+ *
+ * Inspired by oneko.js (MIT); the artwork is original, see src/lib/robot-sprite.ts.
+ */
+import { DOCK, FRAMES, GRID, framePaths } from '../lib/robot-sprite';
+
+const frames = Object.entries(FRAMES).map(([name, rows]) => ({ name, paths: framePaths(rows) }));
+const dock = framePaths(DOCK);
+---
+
+<span class="slot" data-robot-slot>
+  <button class="dock" type="button" aria-label="Call the robot home" tabindex="-1" data-robot-dock>
+    <svg viewBox={`0 0 ${GRID} ${GRID}`} shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+      {dock.map((p) => <path class:list={{ bolt: p.fill === 'var(--glow)' }} fill={p.fill} d={p.d} />)}
+    </svg>
+  </button>
+  <button class="robot" type="button" aria-label="Say hi to the robot" data-robot>
+    <svg viewBox={`0 0 ${GRID} ${GRID}`} shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+      {
+        frames.map(({ name, paths }) => (
+          <g data-frame={name} style={name === 'idle' ? undefined : 'display:none'}>
+            {paths.map((p) => (
+              <path fill={p.fill} d={p.d} />
+            ))}
+          </g>
+        ))
+      }
+    </svg>
+  </button>
+</span>
+
+<style>
+  .slot {
+    --size: 40px;
+    position: relative;
+    display: block;
+    flex: none;
+    width: var(--size);
+    height: var(--size);
+  }
+
+  /* its charging dock: holds the spot while it's out walking */
+  .dock {
+    position: absolute;
+    inset: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    border-radius: 6px;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.25s,
+      visibility 0s 0.25s;
+  }
+  .slot.away .dock {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.25s;
+  }
+  .dock .bolt {
+    animation: charge 1.6s steps(1) infinite;
+  }
+  .dock:hover .bolt {
+    animation-duration: 0.4s;
+  }
+
+  @keyframes charge {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  .robot {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 6px;
+  }
+
+  .robot.roaming {
+    position: fixed;
+    inset: auto;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .robot.hop svg {
+    animation: hop 0.45s steps(3) 2;
+  }
+
+  @keyframes hop {
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .robot.hop svg {
+      animation: none;
+    }
+    .dock,
+    .slot.away .dock {
+      transition: none;
+    }
+    .dock .bolt {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  type Point = { x: number; y: number };
+  type Mode = 'home' | 'roaming' | 'homing';
+
+  const slot = document.querySelector<HTMLElement>('[data-robot-slot]');
+  const robot = document.querySelector<HTMLButtonElement>('[data-robot]');
+  const dockButton = document.querySelector<HTMLButtonElement>('[data-robot-dock]');
+
+  if (slot && robot && dockButton) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+    const wide = matchMedia('(min-width: 640px)');
+    const canRoam = () => !reduce && finePointer.matches && wide.matches;
+
+    const TICK_MS = 100; // one step per tick, like oneko
+    const STEP = 12; // px per step
+    const NEAR = 44; // stops this far (centre to pointer) so the pointer stays clear
+    const SLEEP_AFTER = 90; // ticks of sitting still before it dozes off (~9s)
+    const EDGE = 4;
+    const STORE = 'robot-position';
+
+    const frames = new Map(
+      [...robot.querySelectorAll<SVGGElement>('[data-frame]')].map((g) => [g.dataset.frame!, g]),
+    );
+    let current = 'idle';
+    const show = (name: string) => {
+      if (name === current || !frames.has(name)) return;
+      frames.get(current)!.style.display = 'none';
+      frames.get(name)!.style.display = '';
+      current = name;
+    };
+
+    let mode: Mode = 'home';
+    let pointer: Point | null = null;
+    const pos: Point = { x: 0, y: 0 }; // top-left, viewport coordinates
+    let ticks = 0;
+    let idle = 0; // ticks spent sitting still
+    let asleep = false;
+    let excited = false;
+    let frame = 0;
+    let leaveTimer = 0;
+    let called = false; // sent home from the dock: keep walking home even though the pointer moves
+
+    const size = () => robot.offsetWidth;
+
+    const clamp = (p: Point): Point => ({
+      x: Math.min(Math.max(EDGE, p.x), innerWidth - size() - EDGE),
+      y: Math.min(Math.max(EDGE, p.y), innerHeight - size() - EDGE),
+    });
+
+    const homeSpot = (): Point => {
+      const s = slot.getBoundingClientRect();
+      return { x: s.left, y: s.top };
+    };
+
+    /** Which way to face for a movement or look direction. Diagonals use the side view, as it reads best. */
+    const facing = (dx: number, dy: number): 'N' | 'S' | 'E' | 'W' => {
+      const d = Math.hypot(dx, dy) || 1;
+      if (Math.abs(dx) / d > 0.5) return dx > 0 ? 'E' : 'W';
+      return dy < 0 ? 'N' : 'S';
+    };
+
+    const place = () => {
+      robot.style.transform = `translate(${Math.round(pos.x)}px, ${Math.round(pos.y)}px)`;
+    };
+
+    const remember = () => {
+      try {
+        if (mode === 'home') sessionStorage.removeItem(STORE);
+        else sessionStorage.setItem(STORE, JSON.stringify(pos));
+      } catch {}
+    };
+
+    // Steps are gated on animation frames (like oneko) rather than setInterval: full speed whenever the
+    // page is visible, and nothing at all while it's hidden.
+    let lastStep = 0;
+    const loop = (now: number) => {
+      if (now - lastStep >= TICK_MS) {
+        lastStep = now;
+        step();
+      }
+      if (frame) frame = requestAnimationFrame(loop);
+    };
+    const start = () => {
+      if (!frame) frame = requestAnimationFrame(loop);
+    };
+    const stop = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    const leaveHome = () => {
+      Object.assign(pos, homeSpot());
+      mode = 'roaming';
+      robot.classList.add('roaming');
+      slot.classList.add('away');
+      dockButton.tabIndex = 0;
+      place();
+    };
+
+    const arriveHome = () => {
+      mode = 'home';
+      robot.classList.remove('roaming');
+      slot.classList.remove('away');
+      dockButton.tabIndex = -1;
+      called = false;
+      robot.style.transform = '';
+      asleep = false;
+      idle = 0;
+      show('idle');
+      remember();
+      stop();
+    };
+
+    const walk = (dx: number, dy: number, d: number) => {
+      const s = Math.min(STEP, d);
+      pos.x += (dx / d) * s;
+      pos.y += (dy / d) * s;
+      Object.assign(pos, clamp(pos));
+      show(`${facing(dx, dy)}${ticks % 2 ? 1 : 2}`);
+      place();
+    };
+
+    // One step every 100ms while roaming. Sitting still costs one cheap check per tick.
+    function step() {
+      ticks++;
+      const target =
+        mode === 'homing'
+          ? homeSpot()
+          : pointer
+            ? { x: pointer.x - size() / 2, y: pointer.y - size() / 2 }
+            : pos;
+      const dx = target.x - pos.x;
+      const dy = target.y - pos.y;
+      const d = Math.hypot(dx, dy);
+
+      if (mode === 'homing') {
+        if (d <= STEP) arriveHome();
+        else walk(dx, dy, d);
+        return;
+      }
+
+      // close enough: sit, maybe smile, eventually sleep
+      if (d < NEAR) {
+        idle++;
+        if (asleep) {
+          show(ticks % 10 < 5 ? 'sleep1' : 'sleep2');
+        } else if (idle > SLEEP_AFTER) {
+          asleep = true;
+        } else {
+          show(excited ? 'happy' : 'idle');
+          if (idle === 1) remember();
+        }
+        return;
+      }
+
+      // it has to move: if it was sitting, look up first (longer if it was asleep)
+      if (idle > 1) {
+        show('alert');
+        idle = Math.min(idle, asleep ? 8 : 4) - 1;
+        asleep = false;
+        return;
+      }
+      idle = 0;
+      walk(dx, dy, d);
+    }
+
+    const onPointer = (e: PointerEvent) => {
+      pointer = { x: e.clientX, y: e.clientY };
+      clearTimeout(leaveTimer);
+
+      if (mode === 'home') {
+        const s = slot.getBoundingClientRect();
+        const dx = pointer.x - (s.left + s.width / 2);
+        const dy = pointer.y - (s.top + s.height / 2);
+        const d = Math.hypot(dx, dy);
+        if (e.pointerType === 'mouse' && canRoam() && d > NEAR * 2) {
+          leaveHome();
+          idle = 4; // a moment of "oh!" before it sets off
+          start();
+        } else if (d > 24 && current !== 'happy') {
+          // at home, or when it can't roam: just turn to look
+          const dir = facing(dx, dy);
+          show(dir === 'S' ? 'idle' : `${dir}0`);
+        }
+        return;
+      }
+
+      if (mode === 'homing') {
+        // a call from the dock sticks until the pointer wanders well away from home
+        const h = homeSpot();
+        if (!called || Math.hypot(pointer.x - h.x, pointer.y - h.y) > 160) {
+          called = false;
+          mode = 'roaming';
+        }
+      }
+      start();
+    };
+
+    addEventListener('pointermove', onPointer, { passive: true });
+    addEventListener('pointerdown', onPointer, { passive: true });
+
+    addEventListener('resize', () => {
+      if (mode === 'home') return;
+      if (!canRoam()) arriveHome();
+      else {
+        Object.assign(pos, clamp(pos));
+        place();
+      }
+    });
+
+    // pointer left the window: wander back home after a moment, if home is on screen
+    document.documentElement.addEventListener('mouseleave', () => {
+      clearTimeout(leaveTimer);
+      leaveTimer = window.setTimeout(() => {
+        if (mode !== 'roaming') return;
+        const s = slot.getBoundingClientRect();
+        if (s.bottom < 0 || s.top > innerHeight) return;
+        mode = 'homing';
+        asleep = false;
+        start();
+      }, 1200);
+    });
+
+    addEventListener('pagehide', remember);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else if (mode !== 'home') start();
+    });
+
+    // smile while a link or button is hovered or focused
+    const interactive = (t: EventTarget | null) =>
+      t instanceof Element && t !== robot && !robot.contains(t) && !!t.closest('a, button');
+    const setExcited = (on: boolean) => {
+      excited = on;
+      if (mode !== 'home') return;
+      if (on && current === 'idle') show('happy');
+      else if (!on && current === 'happy' && !robot.classList.contains('hop')) show('idle');
+    };
+    document.addEventListener('pointerover', (e) => setExcited(interactive(e.target)));
+    document.addEventListener('focusin', (e) => setExcited(interactive(e.target)));
+    document.addEventListener('focusout', () => setExcited(false));
+
+    const callHome = () => {
+      if (mode === 'home') return;
+      called = true;
+      mode = 'homing';
+      asleep = false;
+      idle = 0;
+      start();
+    };
+    dockButton.addEventListener('click', callHome);
+
+    robot.addEventListener('click', () => {
+      show('happy');
+      robot.classList.remove('hop');
+      void robot.offsetWidth; // restart the animation
+      robot.classList.add('hop');
+      window.setTimeout(() => {
+        robot.classList.remove('hop');
+        if (mode === 'home') show('idle');
+      }, 1000);
+    });
+
+    // pick up where it was on the previous page
+    if (canRoam()) {
+      try {
+        const saved = JSON.parse(sessionStorage.getItem(STORE) ?? 'null') as Point | null;
+        if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
+          leaveHome();
+          Object.assign(pos, clamp(saved));
+          place();
+          idle = 2;
+          start();
+        }
+      } catch {}
+    }
+  }
+</script>

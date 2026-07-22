@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 2 104 88">
+  <style>.f{fill:#faf7f2;stroke:#22201c}@media (prefers-color-scheme:dark){.f{fill:#ece6dc;stroke:#ece6dc}}</style>
+  <g class="f" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+    <line x1="60" y1="22" x2="60" y2="11"/>
+    <rect x="13" y="43" width="9" height="22" rx="4"/>
+    <rect x="98" y="43" width="9" height="22" rx="4"/>
+    <rect x="20" y="22" width="80" height="64" rx="19"/>
+  </g>
+  <circle cx="60" cy="8" r="6" fill="#b5492f"/>
+  <rect x="30" y="32" width="60" height="44" rx="11" fill="#1d2320"/>
+  <rect x="40" y="43" width="12" height="18" rx="6" fill="#8fe3b0"/>
+  <rect x="68" y="43" width="12" height="18" rx="6" fill="#8fe3b0"/>
+</svg>

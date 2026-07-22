@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Companion Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #faf7f2;
+    --paper-2: #f2ece2;
+    --ink: #22201c;
+    --muted: #6b655c;
+    --line: #e4dccf;
+    --accent: #c4553b;
+    --screen: #1d2320;
+    --glow: #8fe3b0;
+    --rust: #b4532d;
+    --rust-dark: #6e2f18;
+    --owl: #9a8770;
+    --owl-belly: #eadfcc;
+    --amber: #e0a43a;
+    --tongue: #e58a8a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #171614; --paper-2: #211f1c; --ink: #ece6dc; --muted: #a39b8f;
+      --line: #34302a; --accent: #e07a5f; --owl-belly: #3a342c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #171614; --paper-2: #211f1c; --ink: #ece6dc; --muted: #a39b8f;
+    --line: #34302a; --accent: #e07a5f; --owl-belly: #3a342c;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 16px/1.65 Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 72px 16px 96px; }
+  h1, h2 { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; letter-spacing: -0.01em; }
+  h1 { font-size: clamp(40px, 6vw, 56px); line-height: 1.05; margin: 0 0 12px; }
+  .lede { color: var(--muted); max-width: 58ch; margin: 0 0 12px; }
+  .try { color: var(--muted); font-size: 14px; margin: 0 0 48px; }
+  .try a { color: var(--ink); text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  .try a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  .toggle { font: inherit; font-size: 14px; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  .toggle:hover { color: var(--ink); }
+
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+  .cell { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 32px 28px 28px; }
+  .stage { height: 170px; display: grid; place-items: center; margin-bottom: 20px; }
+  .buddy { width: 150px; height: auto; overflow: visible; }
+  .cell h2 { font-size: 28px; margin: 0 0 4px; display: flex; align-items: baseline; gap: 10px; }
+  .cell h2 small { font: 500 12px Inter, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .cell p { margin: 0; color: var(--muted); font-size: 15px; }
+  .cell .pick { color: var(--accent); }
+
+  .notes { margin-top: 48px; color: var(--muted); font-size: 15px; max-width: 64ch; }
+  .notes h2 { color: var(--ink); font-size: 26px; margin: 0 0 8px; }
+  .notes li { margin-bottom: 6px; }
+
+  /* shared svg paint */
+  .s  { stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+  .fp { fill: var(--paper); }
+  .fi { fill: var(--ink); }
+  .fa { fill: var(--accent); }
+  .nf { fill: none; }
+
+  /* blink + sleep */
+  .lids { transform-box: fill-box; transform-origin: center; transition: transform 90ms ease-out; }
+  .buddy.blink .lids, .buddy.asleep .lids { transform: scaleY(0.12); }
+  .zzz { opacity: 0; font: 600 13px Inter, sans-serif; fill: var(--muted); }
+  .buddy.asleep .zzz { opacity: 1; animation: drift 2.4s ease-in-out infinite; }
+  @keyframes drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+  /* robot */
+  .robot .antenna { fill: var(--accent); transition: fill .2s; }
+  .robot .eye { fill: var(--glow); }
+  .robot .mouth { stroke: var(--glow); stroke-width: 2.5; fill: none; stroke-linecap: round; }
+  .robot .smile { opacity: 0; }
+  .robot.excited .flat { opacity: 0; }
+  .robot.excited .smile { opacity: 1; }
+  .robot.excited .antenna { animation: ping .9s ease-in-out infinite; }
+  @keyframes ping { 50% { fill: var(--glow); } }
+
+  /* dog */
+  .dog .snout { fill: var(--paper-2); }
+  .dog .ear-f { fill: #6b5443; }
+  .dog .tail { transform-box: view-box; transform-origin: 84px 112px; }
+  .dog.excited .tail { animation: wag .32s ease-in-out infinite alternate; }
+  @keyframes wag { from { transform: rotate(-14deg); } to { transform: rotate(16deg); } }
+  .dog .tongue { fill: var(--tongue); opacity: 0; transition: opacity .15s; }
+  .dog.excited .tongue { opacity: 1; }
+
+  /* red panda */
+  .panda .rust { fill: var(--rust); }
+  .panda .dark { fill: var(--rust-dark); }
+  .panda .white { fill: #fbf6ee; }
+  .panda .ears { transform-box: view-box; transform-origin: 60px 40px; transition: transform .2s; }
+  .panda.excited .ears { transform: translateY(-3px) scale(1.04); }
+
+  /* owl */
+  .owl .body-f { fill: var(--owl); }
+  .owl .belly { fill: var(--owl-belly); }
+  .owl .iris { fill: var(--amber); }
+  .owl .beak { fill: #b7772a; }
+  .owl .pupil-dot { transform-box: fill-box; transform-origin: center; transition: transform .2s; }
+  .owl.excited .pupil-dot { transform: scale(1.35); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lids, .robot .antenna, .dog .tongue, .panda .ears, .owl .pupil-dot { transition: none; }
+    .buddy.asleep .zzz, .robot.excited .antenna, .dog.excited .tail { animation: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Pick a companion</h1>
+  <p class="lede">Four original SVG characters with the same small engine behind them. Their heads and eyes follow your pointer with easing. They blink now and then, perk up when you hover a link, and doze off after about ten seconds of stillness. Move the mouse to wake them.</p>
+  <p class="try">Hover these to see the "excited" state: <a href="#">Writing</a> · <a href="#">Projects</a> · <a href="#">About</a> &nbsp; <button class="toggle" type="button" id="theme">Toggle dark</button></p>
+
+  <div class="grid">
+    <!-- 1. Robot -->
+    <section class="cell">
+      <div class="stage">
+        <svg class="buddy robot" viewBox="0 0 120 130" data-rot="5" data-ex="8" data-ey="5" aria-hidden="true">
+          <rect class="s fp" x="54" y="84" width="12" height="10" rx="3"/>
+          <rect class="s fp" x="36" y="92" width="48" height="32" rx="11"/>
+          <circle class="fa" cx="60" cy="107" r="4"/>
+          <g class="head">
+            <line class="s" x1="60" y1="22" x2="60" y2="11"/>
+            <circle class="antenna s" cx="60" cy="8" r="4.5"/>
+            <rect class="s fp" x="13" y="44" width="9" height="20" rx="3"/>
+            <rect class="s fp" x="98" y="44" width="9" height="20" rx="3"/>
+            <rect class="s fp" x="20" y="22" width="80" height="64" rx="18"/>
+            <rect x="29" y="32" width="62" height="44" rx="11" fill="var(--screen)"/>
+            <g class="lids">
+              <rect class="eye pupil" x="40" y="44" width="10" height="16" rx="5"/>
+              <rect class="eye pupil" x="70" y="44" width="10" height="16" rx="5"/>
+            </g>
+            <path class="mouth flat" d="M55 68 h10"/>
+            <path class="mouth smile" d="M53 66 q7 6 14 0"/>
+          </g>
+          <g class="zzz"><text x="100" y="26">z</text><text x="108" y="14">z</text></g>
+        </svg>
+      </div>
+      <h2>Robot <small class="pick">my pick</small></h2>
+      <p>A friendly little bot whose face is a screen. Its glowing eyes slide across the screen to follow you, and its antenna blinks when you hover a link. It matches the AI-agent and systems work you do without being on the nose. In dark mode it reads like a tiny terminal.</p>
+    </section>
+
+    <!-- 2. Dog -->
+    <section class="cell">
+      <div class="stage">
+        <svg class="buddy dog" viewBox="0 0 120 130" data-rot="8" data-ex="3.2" data-ey="2.6" data-ear="10" aria-hidden="true">
+          <path class="tail s nf" d="M84 112 C98 110 104 98 100 88" stroke-width="5"/>
+          <path class="s fp" d="M34 128 C30 102 40 86 60 86 C80 86 90 102 86 128 Z"/>
+          <ellipse class="s fp" cx="48" cy="126" rx="8" ry="4.5"/>
+          <ellipse class="s fp" cx="72" cy="126" rx="8" ry="4.5"/>
+          <g class="head">
+            <circle class="s fp" cx="60" cy="58" r="30"/>
+            <ellipse class="snout" cx="60" cy="72" rx="13" ry="9.5"/>
+            <path class="tongue" d="M56.5 76 q3.5 10 7 0 z"/>
+            <ellipse class="fi" cx="60" cy="67.5" rx="5" ry="3.6"/>
+            <path class="s nf" d="M60 71 v3 M60 74 q-4.5 4 -8.5 0.5 M60 74 q4.5 4 8.5 0.5" stroke-width="2"/>
+            <g class="lids">
+              <circle class="fi pupil" cx="48" cy="55" r="4.2"/>
+              <circle class="fi pupil" cx="72" cy="55" r="4.2"/>
+            </g>
+            <path class="ear-f ear" data-side="-1" style="transform-origin:37px 36px" d="M37 34 C22 34 15 56 19 71 C22 82 33 79 36 67 C38 57 41 45 37 34 Z"/>
+            <path class="ear-f ear" data-side="1" style="transform-origin:83px 36px" d="M83 34 C98 34 105 56 101 71 C98 82 87 79 84 67 C82 57 79 45 83 34 Z"/>
+          </g>
+          <g class="zzz"><text x="94" y="28">z</text><text x="102" y="16">z</text></g>
+        </svg>
+      </div>
+      <h2>Dog</h2>
+      <p>The original idea, redrawn as a white pup with floppy dark ears. It sits still and watches. Its ears lag a little behind its head so the motion feels soft, and when you hover a link its tail wags and its tongue pops out. Warm and familiar.</p>
+    </section>
+
+    <!-- 3. Red panda -->
+    <section class="cell">
+      <div class="stage">
+        <svg class="buddy panda" viewBox="0 0 120 130" data-rot="6" data-ex="3" data-ey="2.4" aria-hidden="true">
+          <path d="M80 118 C104 118 112 96 100 84" fill="none" stroke="var(--rust)" stroke-width="13" stroke-linecap="round"/>
+          <path d="M80 118 C104 118 112 96 100 84" fill="none" stroke="var(--rust-dark)" stroke-width="13" stroke-dasharray="5 9" stroke-dashoffset="3"/>
+          <path class="s rust" d="M36 128 C32 104 42 88 60 88 C78 88 88 104 84 128 Z"/>
+          <path class="dark" d="M46 128 C46 112 52 104 60 104 C68 104 74 112 74 128 Z"/>
+          <g class="head">
+            <g class="ears">
+              <path class="s rust" d="M27 44 L31 18 L52 32 Z"/>
+              <path class="white" d="M32 38 L34 24 L45 32 Z"/>
+              <path class="s rust" d="M93 44 L89 18 L68 32 Z"/>
+              <path class="white" d="M88 38 L86 24 L75 32 Z"/>
+            </g>
+            <ellipse class="s rust" cx="60" cy="58" rx="35" ry="28"/>
+            <ellipse class="white" cx="38" cy="68" rx="11" ry="9"/>
+            <ellipse class="white" cx="82" cy="68" rx="11" ry="9"/>
+            <ellipse class="white" cx="46" cy="44" rx="5" ry="3.5"/>
+            <ellipse class="white" cx="74" cy="44" rx="5" ry="3.5"/>
+            <ellipse class="white" cx="60" cy="70" rx="12" ry="9"/>
+            <path d="M47 60 q-1 9 -7 14 M73 60 q1 9 7 14" stroke="var(--rust-dark)" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <ellipse class="fi" cx="60" cy="66" rx="4.6" ry="3.3"/>
+            <path class="s nf" d="M60 69 v2.5 M60 71.5 q-4 3.5 -7 0.5 M60 71.5 q4 3.5 7 0.5" stroke-width="2"/>
+            <g class="lids">
+              <circle class="fi pupil" cx="47" cy="55" r="4.5"/>
+              <circle class="fi pupil" cx="73" cy="55" r="4.5"/>
+            </g>
+          </g>
+          <g class="zzz"><text x="96" y="28">z</text><text x="104" y="16">z</text></g>
+        </svg>
+      </div>
+      <h2>Red panda</h2>
+      <p>A Himalayan animal, so it's a quiet nod to Nepal and gives the site a sense of place. It's the most colourful of the four, so I'd keep it small. Its ears perk up when you hover a link.</p>
+    </section>
+
+    <!-- 4. Owl -->
+    <section class="cell">
+      <div class="stage">
+        <svg class="buddy owl" viewBox="0 0 120 130" data-rot="16" data-ex="4.5" data-ey="4" aria-hidden="true">
+          <path class="s body-f" d="M30 128 C24 100 34 82 60 82 C86 82 96 100 90 128 Z"/>
+          <path class="belly" d="M44 128 C42 108 48 96 60 96 C72 96 78 108 76 128 Z"/>
+          <path class="s nf" d="M54 106 l3 3 l3 -3 M60 106 l3 3 l3 -3 M51 116 l3 3 l3 -3 M57 116 l3 3 l3 -3 M63 116 l3 3 l3 -3" stroke-width="1.6"/>
+          <g class="head">
+            <path class="s body-f" d="M22 42 L28 14 L44 30 Q60 24 76 30 L92 14 L98 42 Q102 84 60 86 Q18 84 22 42 Z"/>
+            <circle class="s fp" cx="44" cy="52" r="16"/>
+            <circle class="s fp" cx="76" cy="52" r="16"/>
+            <g class="lids">
+              <g class="pupil">
+                <circle class="iris" cx="44" cy="52" r="9"/>
+                <circle class="fi pupil-dot" cx="44" cy="52" r="5.5"/>
+                <circle cx="46" cy="50" r="1.6" fill="#fff"/>
+              </g>
+              <g class="pupil">
+                <circle class="iris" cx="76" cy="52" r="9"/>
+                <circle class="fi pupil-dot" cx="76" cy="52" r="5.5"/>
+                <circle cx="78" cy="50" r="1.6" fill="#fff"/>
+              </g>
+            </g>
+            <path class="beak s" d="M55 64 L65 64 L60 74 Z" stroke-width="2"/>
+          </g>
+          <g class="zzz"><text x="98" y="28">z</text><text x="106" y="16">z</text></g>
+        </svg>
+      </div>
+      <h2>Owl</h2>
+      <p>The night-owl developer. Owls really do turn their heads, so this one rotates the most. Its pupils widen when you hover a link. Bookish, which suits a writing-first site.</p>
+    </section>
+  </div>
+
+  <div class="notes">
+    <h2>How it would sit on the real site</h2>
+    <ul>
+      <li><strong>Size and spot:</strong> about 64–72px, tucked into the header next to your name on desktop. It never floats over content or blocks clicks.</li>
+      <li><strong>Performance:</strong> no libraries. It only redraws while you're moving; otherwise the animation loop stops.</li>
+      <li><strong>Touch:</strong> tap anywhere and it looks there. It's hidden on very small screens if it gets crowded.</li>
+      <li><strong>Reduced motion:</strong> eyes still follow your pointer, but there's no easing, blinking, wagging or floating "z".</li>
+      <li><strong>Optional extra:</strong> double-click it and it walks along the bottom edge for a moment, a small nod to the oneko-style chaser.</li>
+    </ul>
+  </div>
+</main>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const IDLE_MS = 10000;
+
+  const buddies = [...document.querySelectorAll('.buddy')].map(el => ({
+    el,
+    head: el.querySelector('.head'),
+    pupils: [...el.querySelectorAll('.pupil')],
+    ears: [...el.querySelectorAll('.ear')],
+    rot: +el.dataset.rot || 6,
+    ex: +el.dataset.ex || 3,
+    ey: +el.dataset.ey || 3,
+    ear: +el.dataset.ear || 0,
+    cur: { x: 0, y: 0 },
+    tgt: { x: 0, y: 0 },
+  }));
+
+  // head pivots at the neck
+  buddies.forEach(b => {
+    b.head.style.transformBox = 'view-box';
+    b.head.style.transformOrigin = '60px 86px';
+  });
+
+  let pointer = null;
+  let raf = 0;
+  let idleTimer = 0;
+
+  function aim() {
+    if (!pointer) return;
+    for (const b of buddies) {
+      const r = b.el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height * 0.42;
+      const dx = pointer.x - cx;
+      const dy = pointer.y - cy;
+      const d = Math.hypot(dx, dy) || 1;
+      const k = Math.min(1, d / 260); // eyes relax toward centre when the pointer is close
+      b.tgt.x = (dx / d) * k;
+      b.tgt.y = (dy / d) * k;
+    }
+  }
+
+  function paint(b) {
+    const { x, y } = b.cur;
+    b.head.style.transform = `translate(${x * 2.5}px, ${y * 2}px) rotate(${x * b.rot}deg)`;
+    for (const p of b.pupils) p.style.transform = `translate(${x * b.ex}px, ${y * b.ey}px)`;
+    for (const e of b.ears) e.style.transform = `rotate(${-x * b.ear}deg)`;
+  }
+
+  function tick() {
+    let moving = false;
+    for (const b of buddies) {
+      const ease = reduce ? 1 : 0.12;
+      b.cur.x += (b.tgt.x - b.cur.x) * ease;
+      b.cur.y += (b.tgt.y - b.cur.y) * ease;
+      if (Math.abs(b.tgt.x - b.cur.x) > 0.002 || Math.abs(b.tgt.y - b.cur.y) > 0.002) moving = true;
+      paint(b);
+    }
+    raf = moving ? requestAnimationFrame(tick) : 0;
+  }
+
+  function kick() { if (!raf) raf = requestAnimationFrame(tick); }
+
+  function sleep() {
+    for (const b of buddies) { b.el.classList.add('asleep'); b.tgt.x = 0; b.tgt.y = 0.55; }
+    kick();
+  }
+
+  function wake() {
+    for (const b of buddies) b.el.classList.remove('asleep');
+    if (reduce) return;
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(sleep, IDLE_MS);
+  }
+
+  function onPointer(e) {
+    pointer = { x: e.clientX, y: e.clientY };
+    wake();
+    aim();
+    kick();
+  }
+
+  addEventListener('pointermove', onPointer, { passive: true });
+  addEventListener('pointerdown', onPointer, { passive: true });
+  addEventListener('scroll', () => { aim(); kick(); }, { passive: true });
+  addEventListener('resize', () => { aim(); kick(); });
+
+  // excited when hovering or focusing anything interactive
+  const isInteractive = t => t instanceof Element && t.closest('a, button');
+  const setExcited = on => buddies.forEach(b => b.el.classList.toggle('excited', on));
+  document.addEventListener('pointerover', e => setExcited(!!isInteractive(e.target)));
+  document.addEventListener('focusin', e => setExcited(!!isInteractive(e.target)));
+  document.addEventListener('focusout', () => setExcited(false));
+
+  // occasional blinks, each buddy on its own rhythm
+  if (!reduce) {
+    for (const b of buddies) {
+      const blink = () => {
+        if (!b.el.classList.contains('asleep')) {
+          b.el.classList.add('blink');
+          setTimeout(() => b.el.classList.remove('blink'), 140);
+        }
+        setTimeout(blink, 2500 + Math.random() * 4000);
+      };
+      setTimeout(blink, 1000 + Math.random() * 3000);
+    }
+    idleTimer = setTimeout(sleep, IDLE_MS);
+  }
+
+  document.getElementById('theme').addEventListener('click', () => {
+    const root = document.documentElement;
+    const dark = root.dataset.theme
+      ? root.dataset.theme === 'dark'
+      : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+  });
+  document.querySelectorAll('.try a').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+})();
+</script>
+</body>
+</html>
