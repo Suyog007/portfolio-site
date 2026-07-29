@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import TagNav from '../../components/TagNav.astro';
+import { getPosts, getTags, groupByYear } from '../../lib/posts';
+
+const posts = await getPosts();
+const tags = getTags(posts);
+---
+
+<Base title="Writing" description="Notes by Suyog Adhikari on building software, Web3 and applied cryptography.">
+  <header class="page-head">
+    <h1>Writing</h1>
+    <p>Notes on building software, Web3, cryptography and whatever I'm deep in at the time.</p>
+  </header>
+
+  {
+    posts.length === 0 ? (
+      <p class="empty">Nothing published yet. The first post is on its way.</p>
+    ) : (
+      <>
+        <TagNav tags={tags} total={posts.length} />
+        {groupByYear(posts).map(([year, items]) => (
+          <section class="year" aria-label={String(year)}>
+            <h2>{year}</h2>
+            <PostList posts={items} withYear={false} />
+          </section>
+        ))}
+      </>
+    )
+  }
+</Base>
+
+<style>
+  .year + .year {
+    margin-top: var(--space-7);
+  }
+
+  .year h2 {
+    margin-bottom: var(--space-3);
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+
+  .empty {
+    color: var(--muted);
+  }
+</style>

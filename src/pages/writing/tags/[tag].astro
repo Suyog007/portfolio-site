@@ -1,0 +1,32 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../../layouts/Base.astro';
+import PostList from '../../../components/PostList.astro';
+import TagNav from '../../../components/TagNav.astro';
+import { getPosts, getTags, tagSlug } from '../../../lib/posts';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  const tags = getTags(posts);
+  return tags.map((tag) => ({
+    params: { tag: tag.slug },
+    props: {
+      tag,
+      tags,
+      total: posts.length,
+      posts: posts.filter((post) => post.data.tags.some((t) => tagSlug(t) === tag.slug)),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tag, tags, total, posts } = Astro.props;
+---
+
+<Base title={`${tag.name} · Writing`} description={`Posts by Suyog Adhikari tagged ${tag.name}.`}>
+  <header class="page-head">
+    <h1>Writing</h1>
+    <p>{posts.length} {posts.length === 1 ? 'post' : 'posts'} tagged {tag.name}.</p>
+  </header>
+  <TagNav tags={tags} total={total} current={tag.slug} />
+  <PostList posts={posts} />
+</Base>

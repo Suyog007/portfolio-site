@@ -1,0 +1,182 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getPosts, readingTime, tagSlug } from '../../lib/posts';
+import { SITE } from '../../site.config';
+import '../../styles/prose.css';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  // posts are newest first: "newer" is the one before, "older" the one after
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post, newer, older } = Astro.props;
+const { title, description, date, updated, tags, draft } = post.data;
+const { Content } = await render(post);
+const minutes = readingTime(post.body);
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+const replySubject = encodeURIComponent(`Re: ${title}`);
+---
+
+<Base
+  title={title}
+  description={description}
+  image={`/og/writing/${post.id}.png`}
+  article={{ published: date, modified: updated, tags }}
+  noindex={draft}
+>
+  <article>
+    <header class="post-head">
+      <a class="back" href="/writing">← Writing</a>
+      {draft && <p class="draft">Draft. Only visible while running the dev server.</p>}
+      <h1>{title}</h1>
+      <p class="meta">
+        <time datetime={date.toISOString()}>{formatDate(date)}</time>
+        <span class="dot">{minutes} min read</span>
+        {
+          updated && (
+            <span class="dot">
+              Updated <time datetime={updated.toISOString()}>{formatDate(updated)}</time>
+            </span>
+          )
+        }
+      </p>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <footer class="post-foot">
+      {
+        tags.length > 0 && (
+          <p class="meta">
+            Filed under{' '}
+            {tags.map((tag, i) => (
+              <>
+                {i > 0 && ', '}
+                <a class="tag" href={`/writing/tags/${tagSlug(tag)}`}>
+                  {tag}
+                </a>
+              </>
+            ))}
+          </p>
+        )
+      }
+      <p class="reply">
+        Thoughts or corrections? <a href={`mailto:${SITE.email}?subject=${replySubject}`}>Reply by email</a>.
+      </p>
+
+      {
+        (newer || older) && (
+          <nav class="pager" aria-label="More writing">
+            {older ? (
+              <a href={`/writing/${older.id}`} rel="prev">
+                <span>Older</span>
+                {older.data.title}
+              </a>
+            ) : (
+              <span />
+            )}
+            {newer && (
+              <a class="next" href={`/writing/${newer.id}`} rel="next">
+                <span>Newer</span>
+                {newer.data.title}
+              </a>
+            )}
+          </nav>
+        )
+      }
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .post-head {
+    margin-bottom: var(--space-7);
+  }
+
+  .back {
+    display: inline-block;
+    margin-bottom: var(--space-6);
+    color: var(--muted);
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+
+  .back:hover {
+    color: var(--ink);
+  }
+
+  .post-head h1 {
+    margin-bottom: var(--space-4);
+  }
+
+  .draft {
+    display: inline-block;
+    margin-bottom: var(--space-4);
+    padding: 0.2rem 0.6rem;
+    border: 1px dashed var(--accent);
+    border-radius: 4px;
+    color: var(--accent);
+    font-size: 0.8125rem;
+  }
+
+  .post-foot {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .reply {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+  }
+
+  .pager a {
+    display: grid;
+    gap: var(--space-1);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .pager a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+  }
+
+  .pager span {
+    color: var(--muted);
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+
+  .pager .next {
+    text-align: right;
+  }
+
+  @media (max-width: 539px) {
+    .pager {
+      grid-template-columns: 1fr;
+    }
+    .pager .next {
+      text-align: left;
+    }
+  }
+</style>
