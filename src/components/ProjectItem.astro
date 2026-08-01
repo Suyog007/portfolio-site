@@ -1,0 +1,98 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+
+export interface Props {
+  project: CollectionEntry<'projects'>;
+  /** Show the longer write-up and the stack (projects page) or keep it to one line (home). */
+  detailed?: boolean;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { project, detailed = false, headingLevel: Heading = 'h3' } = Astro.props;
+const { title, summary, area, stack, github, demo } = project.data;
+const { Content } = await render(project);
+const hasBody = detailed && (project.body ?? '').trim().length > 0;
+---
+
+<article class:list={['project', { detailed }]} id={project.id}>
+  <Heading class="title">{title}</Heading>
+  <p class="summary">{summary}</p>
+  {
+    hasBody && (
+      <div class="body">
+        <Content />
+      </div>
+    )
+  }
+  <p class="meta">
+    <span>{area.join(' / ')}</span>
+    {detailed && stack.length > 0 && <span class="dot">{stack.join(', ')}</span>}
+  </p>
+  {
+    (github || demo) && (
+      <p class="links">
+        {github && (
+          <a class="ext" href={github}>
+            Code<span class="visually-hidden"> for {title}</span>
+          </a>
+        )}
+        {demo && (
+          <a class="ext" href={demo}>
+            Live<span class="visually-hidden"> demo of {title}</span>
+          </a>
+        )}
+      </p>
+    )
+  }
+</article>
+
+<style>
+  .project {
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .title {
+    font-family: var(--sans);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .detailed .title {
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  .summary {
+    margin-top: var(--space-1);
+    color: var(--ink-2);
+  }
+
+  .detailed .summary {
+    margin-top: var(--space-2);
+    font-size: 1.0625rem;
+  }
+
+  .body {
+    margin-top: var(--space-3);
+    color: var(--muted);
+  }
+
+  .body :global(p + p) {
+    margin-top: var(--space-3);
+  }
+
+  .meta {
+    margin-top: var(--space-3);
+  }
+
+  .links {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+    font-size: 0.9375rem;
+  }
+</style>

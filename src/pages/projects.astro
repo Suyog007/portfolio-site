@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectItem from '../components/ProjectItem.astro';
+import { LINKS } from '../site.config';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base
+  title="Projects"
+  description="Selected projects by Suyog Adhikari: encrypted social apps, on-chain games, data indexers, smart contracts and desktop apps."
+>
+  <header class="page-head">
+    <h1>Projects</h1>
+    <p>
+      A selection of things I've built, from encrypted social apps to on-chain games and data indexers.
+      More of my code is on <a href={LINKS.github}>GitHub</a>.
+    </p>
+  </header>
+
+  <div class="list">
+    {projects.map((project) => <ProjectItem project={project} detailed headingLevel="h2" />)}
+  </div>
+</Base>
+
+<style>
+  .list :global(.project) {
+    padding-block: var(--space-6);
+  }
+
+  .list :global(.project:last-child) {
+    border-bottom: 1px solid var(--line);
+  }
+</style>
