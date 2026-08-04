@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import ProjectItem from '../components/ProjectItem.astro';
+import { getPosts } from '../lib/posts';
+import { LINKS, SITE } from '../site.config';
+
+const posts = (await getPosts()).slice(0, 3);
+const projects = (await getCollection('projects', ({ data }) => data.featured)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<Base>
+  <section class="intro section">
+    <h1>Hi, I'm {SITE.shortName}.</h1>
+    <div class="lede">
+      <p>
+        I'm a full-stack engineer working remotely from {SITE.location}. These days I'm a senior backend
+        engineer at <a href="https://www.moneymitra.com/">Money Mitra</a>; before that I spent seven years at <a href="https://www.venture23.io/">Venture23</a>,
+        building products end to end: React and Next.js frontends, backends in TypeScript, Rust and Python,
+        and the smart contracts and indexers under Web3 apps.
+      </p>
+      <p>
+        A lot of my work sits where security meets product: end-to-end encryption, digital signatures and
+        on-chain systems. Lately I've also been building AI agents on top of LLM APIs and MCP.
+      </p>
+    </div>
+    <p class="links">
+      <a href="/about">More about me</a>
+      <a href="/resume">Resume</a>
+      <a class="ext" href={LINKS.github}>GitHub</a>
+      <a class="ext" href={LINKS.linkedin}>LinkedIn</a>
+    </p>
+  </section>
+
+  <section class="section" aria-labelledby="writing">
+    <div class="section-head">
+      <h2 id="writing">Writing</h2>
+      {posts.length > 0 && <a class="more" href="/writing">All writing →</a>}
+    </div>
+    {posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">Nothing published yet. The first post is on its way.</p>}
+  </section>
+
+  <section class="section" aria-labelledby="work">
+    <div class="section-head">
+      <h2 id="work">Selected work</h2>
+      <a class="more" href="/projects">All projects →</a>
+    </div>
+    <div class="projects">
+      {projects.map((project) => <ProjectItem project={project} />)}
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="contact">
+    <div class="section-head">
+      <h2 id="contact">Say hello</h2>
+    </div>
+    <p class="contact">
+      The best way to reach me is email at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. I'm also on <a
+        href={LINKS.github}>GitHub</a
+      > and <a href={LINKS.linkedin}>LinkedIn</a>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .intro h1 {
+    margin-bottom: var(--space-5);
+  }
+
+  .lede {
+    display: grid;
+    gap: var(--space-4);
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-5);
+    font-size: 0.9375rem;
+  }
+
+  .projects :global(.project:last-child) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .empty,
+  .contact {
+    color: var(--ink-2);
+  }
+
+  .empty {
+    color: var(--muted);
+  }
+</style>
