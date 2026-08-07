@@ -1,0 +1,150 @@
+---
+import Base from '../layouts/Base.astro';
+import { LINKS, SITE } from '../site.config';
+import '../styles/prose.css';
+
+const path = [
+  { when: '2026 – now', role: 'Senior Backend Engineer', where: 'Money Mitra' },
+  { when: '2025 – 2026', role: 'Tech Lead', where: 'Venture23' },
+  { when: '2022 – 2025', role: 'Senior Software Engineer', where: 'Venture23' },
+  { when: '2019 – 2022', role: 'Software Engineer', where: 'Venture23' },
+  { when: '2020 – 2021', role: 'Freelance developer', where: 'Self-employed' },
+  { when: '2019', role: 'Software Developer Intern', where: 'TechFlow.space' },
+  { when: '2019', role: 'B.Sc. Computer Science & IT', where: 'Orchid International College' },
+];
+
+const toolbox = [
+  { label: 'Languages', items: 'TypeScript, JavaScript, Rust, Python, Solidity, Move' },
+  { label: 'Frontend', items: 'React, Next.js, Electron' },
+  { label: 'Backend', items: 'Node.js, NestJS, Express, Django, REST, WebSockets, event-driven systems' },
+  { label: 'Data', items: 'PostgreSQL, MySQL, MongoDB, Redis, BullMQ, Prisma, on-chain indexers' },
+  { label: 'Chains', items: 'Ethereum and EVM, Sui, Tezos, Stellar, Solana, ICON' },
+  { label: 'Contracts', items: 'Hardhat, Foundry, OpenZeppelin, ethers.js, viem, wagmi' },
+  { label: 'Security', items: 'Encryption, hashing, digital signatures, key management, E2E encryption' },
+  { label: 'AI', items: 'OpenAI and Anthropic APIs, MCP, autonomous agents' },
+  { label: 'Infra', items: 'Docker, GitHub Actions, Nginx, AWS (Lambda, EC2, S3, RDS)' },
+];
+---
+
+<Base
+  title="About"
+  description="About Suyog Adhikari: a full-stack engineer from Nepal, lately a senior backend engineer at Money Mitra, previously tech lead at Venture23 — web products, smart contracts, applied cryptography and on-chain infrastructure."
+>
+  <header class="page-head">
+    <h1>About</h1>
+  </header>
+
+  <div class="prose">
+    <p>
+      I'm {SITE.name}, a software engineer from {SITE.location}. I studied computer science at Orchid International
+      College in Kathmandu, and around graduation in 2019 I interned at TechFlow.space, building Python and Django
+      analytics tools and a Telegram bot.
+    </p>
+    <p>
+      Later in 2019 I joined <a href="https://www.venture23.io/">Venture23</a>, a remote engineering studio, and I
+      stayed for seven years. As a software engineer I built backend APIs, indexers and analytics
+      pipelines for smart contracts, and wrote and deployed Solidity contracts across EVM chains and ICON for NFT
+      platforms, staking systems, DeFi protocols, cross-chain bridges and on-chain games. On the side I freelanced, building a Django news aggregator and
+      Python/Selenium data pipelines.
+    </p>
+    <p>
+      As a senior engineer I worked across the whole stack: React and Next.js frontends, high-throughput Node.js
+      services, and Web3 infrastructure such as bridges, liquid staking, bonding curves and on-chain auctions. I also
+      started guiding architecture decisions and mentoring other engineers, and delivered a social-impact app end to
+      end, from protocol to product.
+    </p>
+    <p>
+      As a tech lead at Venture23 I led 5 to 10+ engineers across frontend, backend, smart-contract and infrastructure
+      work, and owned architecture, code review and releases. Recent work there includes KIOSK-INDEXER, a Rust indexer
+      and analytics platform for Sui; tokenomics with staking, vesting and reward contracts; fully on-chain games
+      written in Move; and AI agents that orchestrate LLMs through the OpenAI and Anthropic APIs and MCP.
+    </p>
+    <p>
+      Since September 2026 I've been a senior backend engineer at <a href="https://www.moneymitra.com/">Money Mitra</a>, rebuilding their backend in Python and
+      Django on a clean architecture — API domain by API domain — with an eye on correctness and security.
+    </p>
+    <p>
+      Outside client work, I'm a core organizer of Sui Hacker House Kathmandu, and I've been at Paris Blockchain Week
+      2024, Sui Basecamp 2024 and Sui Hacker House Bangkok. I was also shortlisted in the Breaking the Ice hackathon
+      for Cre8Space.
+    </p>
+    <p>
+      I speak Nepali, English and Hindi. The easiest way to reach me is <a href={`mailto:${SITE.email}`}>email</a>, or
+      find me on <a href={LINKS.github}>GitHub</a> and <a href={LINKS.linkedin}>LinkedIn</a>.
+    </p>
+  </div>
+
+  <section class="section" aria-labelledby="path">
+    <div class="section-head"><h2 id="path">Path</h2></div>
+    <dl class="rows">
+      {
+        path.map((item) => (
+          <div>
+            <dt>{item.when}</dt>
+            <dd>
+              {item.role} <span>· {item.where}</span>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="toolbox">
+    <div class="section-head"><h2 id="toolbox">Toolbox</h2></div>
+    <dl class="rows">
+      {
+        toolbox.map((group) => (
+          <div>
+            <dt>{group.label}</dt>
+            <dd>{group.items}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+</Base>
+
+<style>
+  .prose {
+    margin-bottom: var(--space-8);
+  }
+
+  .rows {
+    margin: 0;
+  }
+
+  .rows div {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: var(--space-1) var(--space-5);
+    padding-block: var(--space-3);
+    border-top: 1px solid var(--line);
+  }
+
+  .rows div:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  dt {
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.1rem;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--ink-2);
+  }
+
+  dd span {
+    color: var(--muted);
+  }
+
+  @media (max-width: 539px) {
+    .rows div {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

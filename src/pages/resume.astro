@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import { RESUMES, SITE } from '../site.config';
+---
+
+<Base title="Resume" description="Download Suyog Adhikari's resume: full-stack, backend and Web3 work in one PDF.">
+  <header class="page-head">
+    <h1>Resume</h1>
+    <p>One CV, kept current: backend systems and APIs, React and Next.js frontends, blockchain infrastructure and applied cryptography.</p>
+  </header>
+
+  <ul class="resumes">
+    {
+      RESUMES.map((resume) => (
+        <li>
+          <h2>{resume.title}</h2>
+          <p class="summary">{resume.summary}</p>
+          <p class="meta">Best for: {resume.audience}</p>
+          <p class="actions">
+            <a href={resume.file} download={`${SITE.name} – Resume.pdf`}>
+              Download PDF<span class="visually-hidden">: {resume.title}</span>
+            </a>
+            <a class="ext" href={resume.file} target="_blank" rel="noopener">
+              View in browser<span class="visually-hidden">: {resume.title}</span>
+            </a>
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="note">
+    Updated October 2026. Need something specific? <a
+      href={`mailto:${SITE.email}?subject=${encodeURIComponent('Resume')}`}>Email me</a
+    >.
+  </p>
+</Base>
+
+<style>
+  .resumes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--line);
+  }
+
+  li:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .summary {
+    margin-top: var(--space-2);
+    color: var(--ink-2);
+  }
+
+  .meta {
+    margin-top: var(--space-2);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-4);
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  .note {
+    margin-top: var(--space-6);
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+</style>
