@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 120" width="720" height="120" role="img" aria-label="Safe order inside execute: check, mark executed, then send ETH.">
+  <style>
+    :root { --d-strong:#22201c; --d-muted:#6b655c; --d-line:#d8cfc0; --d-fill:#f2ece2; --d-accent:#b5492f; --d-soft:#f3d9cc; }
+    @media (prefers-color-scheme: dark) { :root { --d-strong:#ece6dc; --d-muted:#a39b8f; --d-line:#3f3a33; --d-fill:#211f1c; --d-accent:#e48a6f; --d-soft:#3a251e; } }
+    .box { fill: var(--d-fill); stroke: var(--d-line); stroke-width: 1.5; }
+    .box-a { fill: var(--d-soft); stroke: var(--d-accent); stroke-width: 1.5; }
+    .name { font: 500 14px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: var(--d-strong); }
+    .sub { font: 400 10.5px ui-monospace, SFMono-Regular, Menlo, monospace; fill: var(--d-muted); }
+    .ln { stroke: var(--d-muted); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .n { font: 400 12px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: var(--d-muted); }
+  </style>
+
+  <rect class="box" x="15" y="30" width="210" height="56" rx="4"/>
+  <text class="name" x="29" y="54">Check</text>
+  <text class="sub" x="29" y="72">deadline · quorum · balance</text>
+  <path class="ln" d="M225 58 H247"/>
+  <path class="ln" d="M242 53 L248 58 L242 63"/>
+  <rect class="box" x="255" y="30" width="210" height="56" rx="4"/>
+  <text class="name" x="269" y="54">Effect</text>
+  <text class="sub" x="269" y="72">executed = true</text>
+  <path class="ln" d="M465 58 H487"/>
+  <path class="ln" d="M482 53 L488 58 L482 63"/>
+  <rect class="box-a" x="495" y="30" width="210" height="56" rx="4"/>
+  <text class="name" x="509" y="54">Interact</text>
+  <text class="sub" x="509" y="72">send the ETH</text>
+  <text class="n" x="15" y="106">Mark the proposal done before the external call, so a re-entering recipient finds it closed.</text>
+</svg>
