@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 120" width="720" height="120" role="img" aria-label="Event flow: an event gets an id, the queue ignores duplicate ids, the database ignores duplicate rows, so a replay changes nothing.">
+  <style>
+    :root { --d-strong:#22201c; --d-muted:#6b655c; --d-line:#d8cfc0; --d-fill:#f2ece2; --d-accent:#b5492f; --d-soft:#f3d9cc; }
+    @media (prefers-color-scheme: dark) { :root { --d-strong:#ece6dc; --d-muted:#a39b8f; --d-line:#3f3a33; --d-fill:#211f1c; --d-accent:#e48a6f; --d-soft:#3a251e; } }
+    .box { fill: var(--d-fill); stroke: var(--d-line); stroke-width: 1.5; }
+    .box-a { fill: var(--d-soft); stroke: var(--d-accent); stroke-width: 1.5; }
+    .name { font: 500 14px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: var(--d-strong); }
+    .sub { font: 400 10.5px ui-monospace, SFMono-Regular, Menlo, monospace; fill: var(--d-muted); }
+    .ln { stroke: var(--d-muted); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .n { font: 400 12px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: var(--d-muted); }
+  </style>
+
+  <rect class="box" x="15" y="30" width="150" height="56" rx="4"/>
+  <text class="name" x="29" y="54">Log arrives</text>
+  <text class="sub" x="29" y="72">tx hash + log index</text>
+  <path class="ln" d="M165 58 H187"/>
+  <path class="ln" d="M182 53 L188 58 L182 63"/>
+  <rect class="box" x="195" y="30" width="150" height="56" rx="4"/>
+  <text class="name" x="209" y="54">Queue</text>
+  <text class="sub" x="209" y="72">same jobId ignored</text>
+  <path class="ln" d="M345 58 H367"/>
+  <path class="ln" d="M362 53 L368 58 L362 63"/>
+  <rect class="box" x="375" y="30" width="150" height="56" rx="4"/>
+  <text class="name" x="389" y="54">Postgres</text>
+  <text class="sub" x="389" y="72">ON CONFLICT DO NOTHING</text>
+  <path class="ln" d="M525 58 H547"/>
+  <path class="ln" d="M542 53 L548 58 L542 63"/>
+  <rect class="box-a" x="555" y="30" width="150" height="56" rx="4"/>
+  <text class="name" x="569" y="54">Same result</text>
+  <text class="sub" x="569" y="72">replay is harmless</text>
+  <text class="n" x="15" y="106">Queue dedupe is a convenience. The unique key in the database is the guarantee.</text>
+</svg>
