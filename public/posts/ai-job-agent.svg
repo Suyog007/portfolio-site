@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 236" width="720" height="236" role="img" aria-label="The job agent pipeline: fetching, deduplication, eligibility and ranking run in plain code without an API key. Model calls for assessment and a tailored resume are budgeted, and nothing is submitted until I approve the exact version.">
+  <style>
+    :root {
+      --d-strong: #22201c; --d-muted: #6b655c; --d-line: #d8cfc0; --d-fill: #f2ece2;
+      --d-accent: #b5492f; --d-soft: #f3d9cc;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --d-strong: #ece6dc; --d-muted: #a39b8f; --d-line: #3f3a33; --d-fill: #211f1c;
+        --d-accent: #e48a6f; --d-soft: #3a251e;
+      }
+    }
+    .box { fill: var(--d-fill); stroke: var(--d-line); stroke-width: 1.5; }
+    .box-a { fill: var(--d-soft); stroke: var(--d-accent); stroke-width: 1.5; }
+    .box-g { fill: var(--d-soft); stroke: var(--d-accent); stroke-width: 1.5; stroke-dasharray: 6 4; }
+    .name { font: 500 14px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: var(--d-strong); }
+    .sub { font: 400 10.5px ui-monospace, SFMono-Regular, Menlo, monospace; fill: var(--d-muted); }
+    .k { font: 600 10.5px ui-monospace, SFMono-Regular, Menlo, monospace; fill: var(--d-muted); letter-spacing: 0.08em; }
+    .ln { stroke: var(--d-muted); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .mid { text-anchor: middle; }
+  </style>
+
+  <text class="k" x="10" y="20">PLAIN CODE · THE PIPELINE RUNS WITHOUT AN API KEY</text>
+
+  <rect class="box" x="10" y="32" width="160" height="56" rx="4"/>
+  <text class="name" x="26" y="56">Fetch</text>
+  <text class="sub" x="26" y="74">boards, ATS, feeds</text>
+
+  <rect class="box" x="190" y="32" width="160" height="56" rx="4"/>
+  <text class="name" x="206" y="56">Normalize + dedupe</text>
+  <text class="sub" x="206" y="74">one copy per job</text>
+
+  <rect class="box" x="370" y="32" width="160" height="56" rx="4"/>
+  <text class="name" x="386" y="56">Eligibility</text>
+  <text class="sub" x="386" y="74">remote ≠ worldwide</text>
+
+  <rect class="box" x="550" y="32" width="160" height="56" rx="4"/>
+  <text class="name" x="566" y="56">Rank</text>
+  <text class="sub" x="566" y="74">against my profile</text>
+
+  <path class="ln" d="M170 60 H187"/>
+  <path class="ln" d="M182 55 L188 60 L182 65"/>
+  <path class="ln" d="M350 60 H367"/>
+  <path class="ln" d="M362 55 L368 60 L362 65"/>
+  <path class="ln" d="M530 60 H547"/>
+  <path class="ln" d="M542 55 L548 60 L542 65"/>
+
+  <path class="ln" d="M630 88 V106 H90 V128"/>
+  <path class="ln" d="M85 123 L90 129 L95 123"/>
+
+  <text class="k" x="106" y="126">MODEL CALLS AND ONE HUMAN GATE</text>
+
+  <rect class="box-a" x="10" y="138" width="160" height="56" rx="4"/>
+  <text class="name" x="26" y="162">Assess the fit</text>
+  <text class="sub" x="26" y="180">and explain why</text>
+
+  <rect class="box-a" x="190" y="138" width="160" height="56" rx="4"/>
+  <text class="name" x="206" y="162">Tailor the resume</text>
+  <text class="sub" x="206" y="174">selected, reordered,</text>
+  <text class="sub" x="206" y="186">never rewritten</text>
+
+  <rect class="box-g" x="370" y="138" width="160" height="56" rx="4"/>
+  <text class="name" x="386" y="162">Your approval</text>
+  <text class="sub" x="386" y="180">one edit voids it</text>
+
+  <rect class="box" x="550" y="138" width="160" height="56" rx="4"/>
+  <text class="name" x="566" y="162">Submit</text>
+  <text class="sub" x="566" y="180">after the gate</text>
+
+  <path class="ln" d="M170 166 H187"/>
+  <path class="ln" d="M182 161 L188 166 L182 171"/>
+  <path class="ln" d="M350 166 H367"/>
+  <path class="ln" d="M362 161 L368 166 L362 171"/>
+  <path class="ln" d="M530 166 H547"/>
+  <path class="ln" d="M542 161 L548 166 L542 171"/>
+
+  <text class="sub mid" x="360" y="220">every model call reserves its worst-case cost before it runs — the budget can't break</text>
+</svg>

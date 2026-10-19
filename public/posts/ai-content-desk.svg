@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 236" width="720" height="236" role="img" aria-label="The content desk pipeline: it watches sources, researches a story and drafts LinkedIn and X versions, then reshapes on demand. Approval is bound to the exact text and image, and only then does anything publish.">
+  <style>
+    :root {
+      --d-strong: #22201c; --d-muted: #6b655c; --d-line: #d8cfc0; --d-fill: #f2ece2;
+      --d-accent: #b5492f; --d-soft: #f3d9cc;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --d-strong: #ece6dc; --d-muted: #a39b8f; --d-line: #3f3a33; --d-fill: #211f1c;
+        --d-accent: #e48a6f; --d-soft: #3a251e;
+      }
+    }
+    .box { fill: var(--d-fill); stroke: var(--d-line); stroke-width: 1.5; }
+    .box-a { fill: var(--d-soft); stroke: var(--d-accent); stroke-width: 1.5; }
+    .box-g { fill: var(--d-soft); stroke: var(--d-accent); stroke-width: 1.5; stroke-dasharray: 6 4; }
+    .name { font: 500 14px system-ui, -apple-system, 'Segoe UI', sans-serif; fill: var(--d-strong); }
+    .sub { font: 400 10.5px ui-monospace, SFMono-Regular, Menlo, monospace; fill: var(--d-muted); }
+    .k { font: 600 10.5px ui-monospace, SFMono-Regular, Menlo, monospace; fill: var(--d-muted); letter-spacing: 0.08em; }
+    .ln { stroke: var(--d-muted); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .mid { text-anchor: middle; }
+  </style>
+
+  <text class="k" x="10" y="20">FINDING AND DRAFTING</text>
+
+  <rect class="box" x="10" y="32" width="213" height="56" rx="4"/>
+  <text class="name" x="26" y="56">Watch the sources</text>
+  <text class="sub" x="26" y="74">a daily pile of AI news</text>
+
+  <rect class="box" x="253" y="32" width="213" height="56" rx="4"/>
+  <text class="name" x="269" y="56">Research a story</text>
+  <text class="sub" x="269" y="74">what happened and why</text>
+
+  <rect class="box" x="496" y="32" width="213" height="56" rx="4"/>
+  <text class="name" x="512" y="56">Draft both versions</text>
+  <text class="sub" x="512" y="74">LinkedIn + X</text>
+
+  <path class="ln" d="M223 60 H249"/>
+  <path class="ln" d="M244 55 L250 60 L244 65"/>
+  <path class="ln" d="M466 60 H492"/>
+  <path class="ln" d="M487 55 L493 60 L487 65"/>
+
+  <path class="ln" d="M602 88 V106 H116 V128"/>
+  <path class="ln" d="M111 123 L116 129 L121 123"/>
+
+  <text class="k" x="132" y="126">THE PART WITH MY NAME ON IT</text>
+
+  <rect class="box-a" x="10" y="138" width="213" height="56" rx="4"/>
+  <text class="name" x="26" y="162">Reshape on demand</text>
+  <text class="sub" x="26" y="174">What if · Contrarian ·</text>
+  <text class="sub" x="26" y="186">3 takeaways · one question</text>
+
+  <rect class="box-g" x="253" y="138" width="213" height="56" rx="4"/>
+  <text class="name" x="269" y="162">Your approval</text>
+  <text class="sub" x="269" y="174">the exact text + image,</text>
+  <text class="sub" x="269" y="186">or nothing happens</text>
+
+  <rect class="box" x="496" y="138" width="213" height="56" rx="4"/>
+  <text class="name" x="512" y="162">Publish + scorecard</text>
+  <text class="sub" x="512" y="180">what earns replies</text>
+
+  <path class="ln" d="M223 166 H249"/>
+  <path class="ln" d="M244 161 L250 166 L244 171"/>
+  <path class="ln" d="M466 166 H492"/>
+  <path class="ln" d="M487 161 L493 166 L487 171"/>
+
+  <text class="sub mid" x="360" y="220">publish stays mine — approval is bound to the exact text and image</text>
+</svg>
