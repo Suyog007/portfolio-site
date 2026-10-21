@@ -3,7 +3,6 @@ title: "Making an indexer safe to retry"
 description: "Queues retry. Chains reorg. Workers crash halfway through. Here is how I stop an on-chain indexer from counting the same event twice."
 date: 2026-08-31
 tags: [Backend, Web3]
-draft: true
 ---
 
 An indexer has one job: read what happened on chain and write it down. The part that bites is that "read it once" is not something you get to have. Workers crash. A queue redelivers a job because the ack got lost. A node hiccups and you re-scan a block range to be safe. Every one of those means the same event shows up again.
