@@ -3,7 +3,6 @@ title: "Three ways a DAO treasury goes wrong"
 description: "Notes from writing a small proposal-and-vote contract: snapshot your voting power, update state before you send ETH, and decide what 'passed' means."
 date: 2026-08-21
 tags: [Solidity, Web3]
-draft: true
 ---
 
 A DAO treasury sounds small. Token holders propose a transfer, others vote, and if it passes, the ETH moves. When I wrote [DAO Treasury](/projects) I kept the scope tight, and I still ran into three places where the obvious version of the code is wrong.
