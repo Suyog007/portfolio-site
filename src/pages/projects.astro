@@ -1,10 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import ProjectItem from '../components/ProjectItem.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import { LINKS } from '../site.config';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const areas = [...new Set(projects.flatMap((p) => p.data.area))];
 ---
 
 <Base
@@ -19,17 +20,83 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
     </p>
   </header>
 
-  <div class="list">
-    {projects.map((project) => <ProjectItem project={project} detailed headingLevel="h2" />)}
+  <nav class="filters" aria-label="Filter projects by area" hidden>
+    <button type="button" aria-pressed="true" data-area="">All</button>
+    {areas.map((a) => <button type="button" aria-pressed="false" data-area={a}>{a}</button>)}
+  </nav>
+
+  <div class="grid">
+    {projects.map((project) => <ProjectCard project={project} />)}
   </div>
 </Base>
 
+<script>
+  const nav = document.querySelector<HTMLElement>('.filters');
+  const cards = document.querySelectorAll<HTMLElement>('.grid .card');
+  if (nav) {
+    nav.hidden = false;
+    nav.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('button');
+      if (!btn) return;
+      const area = btn.dataset.area ?? '';
+      nav.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      cards.forEach((c) => {
+        c.hidden = area !== '' && !(c.dataset.areas ?? '').split('|').includes(area);
+      });
+    });
+  }
+</script>
+
 <style>
-  .list :global(.project) {
-    padding-block: var(--space-6);
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
   }
 
-  .list :global(.project:last-child) {
-    border-bottom: 1px solid var(--line);
+  .filters[hidden] {
+    display: none;
+  }
+
+  .filters button {
+    padding: 0.2rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: none;
+    color: var(--muted);
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .filters button:hover {
+    color: var(--ink);
+    border-color: var(--muted);
+  }
+
+  .filters button[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .grid :global(.card[hidden]) {
+    display: none;
+  }
+
+  @media (min-width: 820px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+      width: min(62rem, calc(100vw - 2 * var(--gutter)));
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
   }
 </style>
