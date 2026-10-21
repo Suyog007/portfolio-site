@@ -6,6 +6,8 @@ stack: [Sui, Seal, React]
 github: https://github.com/Suyog007/Encrypted_X
 demo: https://encryptedxseal.vercel.app/
 featured: true
+image: /projects/encrypted-x.png
+imageAlt: The compose form in Encrypted_X, where a post is written and encrypted before it is posted.
 order: 1
 ---
 

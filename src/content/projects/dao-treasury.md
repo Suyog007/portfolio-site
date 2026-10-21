@@ -5,6 +5,8 @@ area: [Web3]
 stack: [Solidity, Base Sepolia]
 github: https://github.com/Suyog007/DAO-Treasury
 demo: https://daotreasurybase.vercel.app/
+image: /projects/dao-treasury.png
+imageAlt: The DAO Treasury dashboard showing treasury balance, total proposals and voting power.
 order: 5
 ---
 
