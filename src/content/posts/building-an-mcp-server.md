@@ -3,7 +3,6 @@ title: "Building an MCP server: what to expose and what to keep out"
 description: "A practical look at writing an MCP server in TypeScript, from the first tool to the decisions about scope, descriptions and trust."
 date: 2026-09-30
 tags: [MCP, AI, TypeScript]
-draft: true
 ---
 
 The Model Context Protocol is a standard way to give a language model access to your tools and data. Instead of each app inventing its own plugin format, a server describes what it can do and any compatible client can call it.
