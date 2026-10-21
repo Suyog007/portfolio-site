@@ -3,7 +3,6 @@ title: "Encrypting in the browser, not on the server"
 description: "What changes when a post is encrypted before it leaves the client, and why 'encrypted at rest' is a weaker claim than it sounds."
 date: 2026-09-10
 tags: [Cryptography, Web3]
-draft: true
 ---
 
 Most apps that say they encrypt your data mean two things: the connection uses TLS, and the disk is encrypted at rest. Both are good. Neither stops the company running the server from reading your data, because the server holds the keys.
