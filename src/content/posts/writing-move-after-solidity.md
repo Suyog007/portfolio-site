@@ -3,7 +3,6 @@ title: "Writing Move after Solidity"
 description: "What changes when assets are objects you own instead of rows in a contract's mapping, and the Solidity habits I had to drop."
 date: 2026-09-20
 tags: [Move, Sui, Solidity]
-draft: true
 ---
 
 Solidity trained me to think of a token as a number in a mapping. The contract owns the ledger, and `balances[alice]` is the truth. Move, at least the flavour used on Sui, starts somewhere else: an asset is a value, and whoever holds the value owns it.
