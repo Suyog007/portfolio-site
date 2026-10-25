@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run build && if [ -n \"$WRITING_HOME\" ]; then cp dist/writing.html dist/index.html; fi"
   publish = "dist"
 
 [build.environment]
@@ -9,10 +9,3 @@
   for = "/_astro/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-# writing.suyogadhikari.tech opens on the writing list
-[[redirects]]
-  from = "https://writing.suyogadhikari.tech/"
-  to = "/writing"
-  status = 200
-  force = true
