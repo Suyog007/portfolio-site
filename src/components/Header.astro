@@ -19,17 +19,21 @@ const isCurrent = (href: string) => {
     <a class="name" href={HOME_URL} aria-current={!IS_WRITING_SITE && path === '/' ? 'page' : undefined}>{SITE.name}</a>
   </div>
   <nav aria-label="Main">
-    <ul>
-      {
-        NAV.map(({ href, label }) => (
-          <li>
-            <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
-              {label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    {
+      NAV.length > 0 && (
+<ul>
+          {
+            NAV.map(({ href, label }) => (
+              <li>
+                <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+                  {label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      )
+    }
     <ThemeToggle />
   </nav>
 </header>

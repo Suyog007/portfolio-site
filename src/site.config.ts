@@ -27,8 +27,9 @@ const main = (path: string) => (IS_WRITING_SITE ? `${MAIN_URL}${path}` : path);
 
 export const HOME_URL = main('/');
 
+// The writing subdomain has no menu; the logo links back to the main site.
 export const NAV = IS_WRITING_SITE
-  ? [{ href: MAIN_URL, label: 'Portfolio' }]
+  ? []
   : [
       { href: WRITING_URL, label: 'Writing' },
       { href: '/projects', label: 'Projects' },
