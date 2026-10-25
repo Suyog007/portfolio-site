@@ -27,12 +27,14 @@ const main = (path: string) => (IS_WRITING_SITE ? `${MAIN_URL}${path}` : path);
 
 export const HOME_URL = main('/');
 
-export const NAV = [
-  { href: IS_WRITING_SITE ? '/writing' : WRITING_URL, label: 'Writing' },
-  { href: main('/projects'), label: 'Projects' },
-  { href: main('/about'), label: 'About' },
-  { href: main('/resume'), label: 'Resume' },
-] as const;
+export const NAV = IS_WRITING_SITE
+  ? [{ href: MAIN_URL, label: 'Portfolio' }]
+  : [
+      { href: WRITING_URL, label: 'Writing' },
+      { href: '/projects', label: 'Projects' },
+      { href: '/about', label: 'About' },
+      { href: '/resume', label: 'Resume' },
+    ];
 
 export const RESUMES = [
   {
