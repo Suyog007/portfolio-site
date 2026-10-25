@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && if [ -n \"$WRITING_HOME\" ]; then cp dist/writing.html dist/index.html; fi"
+  command = "npm run build && if [ -n \"$WRITING_HOME\" ]; then node scripts/writing-home.mjs; fi"
   publish = "dist"
 
 [build.environment]

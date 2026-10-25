@@ -17,14 +17,21 @@ export const LINKS = {
   linkedin: 'https://www.linkedin.com/in/suyog-adhikari-5b483718a',
 } as const;
 
-// Writing lives on its own subdomain, served from a second Netlify project.
+// Writing lives on its own subdomain, served from a second Netlify project that
+// is built with WRITING_HOME set. The two sites link to each other with absolute URLs.
+export const MAIN_URL = 'https://suyogadhikari.tech';
 export const WRITING_URL = 'https://writing.suyogadhikari.tech';
+export const IS_WRITING_SITE = Boolean(process.env.WRITING_HOME);
+
+const main = (path: string) => (IS_WRITING_SITE ? `${MAIN_URL}${path}` : path);
+
+export const HOME_URL = main('/');
 
 export const NAV = [
-  { href: WRITING_URL, label: 'Writing' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/about', label: 'About' },
-  { href: '/resume', label: 'Resume' },
+  { href: IS_WRITING_SITE ? '/writing' : WRITING_URL, label: 'Writing' },
+  { href: main('/projects'), label: 'Projects' },
+  { href: main('/about'), label: 'About' },
+  { href: main('/resume'), label: 'Resume' },
 ] as const;
 
 export const RESUMES = [

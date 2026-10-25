@@ -1,18 +1,22 @@
 ---
-import { NAV, SITE } from '../site.config';
+import { HOME_URL, IS_WRITING_SITE, NAV, SITE, WRITING_URL } from '../site.config';
 import Robot from './Robot.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import { cleanPath } from '../lib/url';
 
 const path = cleanPath(Astro.url.pathname);
-const isCurrent = (href: string) =>
-  href.startsWith('http') ? path === '/writing' || path.startsWith('/writing/') : path === href || path.startsWith(`${href}/`);
+const onWriting = path === '/writing' || path.startsWith('/writing/') || (IS_WRITING_SITE && path === '/');
+const isCurrent = (href: string) => {
+  if (href === WRITING_URL || href === '/writing') return onWriting;
+  if (href.startsWith('http')) return false;
+  return path === href || path.startsWith(`${href}/`);
+};
 ---
 
 <header class="container header">
   <div class="brand">
     <Robot />
-    <a class="name" href="/" aria-current={path === '/' ? 'page' : undefined}>{SITE.name}</a>
+    <a class="name" href={HOME_URL} aria-current={!IS_WRITING_SITE && path === '/' ? 'page' : undefined}>{SITE.name}</a>
   </div>
   <nav aria-label="Main">
     <ul>
