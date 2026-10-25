@@ -329,7 +329,7 @@ main {
   padding: 0;
   list-style: none;
 }
-.sw-tags a {
+.sw-tags span {
   display: inline-block;
   padding: var(--space-1) var(--space-3);
   border: 1px solid var(--hairline);
@@ -337,25 +337,6 @@ main {
   font: 400 14px/20px var(--font-serif);
   color: var(--ink-muted);
   text-decoration: none;
-}
-.sw-tags a:hover {
-  color: var(--ink);
-  border-color: var(--ink-muted);
-}
-
-/* ---------- archive (card catalog) ---------- */
-
-.sw-drawer {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
-}
-.sw-drawer__label {
-  grid-column: 1 / -1;
-}
-.sw-drawer .sw-card {
-  max-width: none;
-}
-.sw-card:hover {
-  box-shadow: var(--shadow-card), 0 0 0 1px var(--hairline);
 }
 
 /* ---------- shelf ---------- */
@@ -370,4 +351,13 @@ main {
 }
 .sw-shelf + .sw-shelf {
   margin-top: var(--space-12);
+}
+
+/* the whole title is printed on the spine (it wraps into columns instead of being cut off) */
+.sw-shelf .sw-spine__title {
+  white-space: normal;
+  line-height: 19px;
+  text-overflow: clip;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }

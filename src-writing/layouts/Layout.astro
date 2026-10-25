@@ -96,9 +96,8 @@ const person = {
     <header class="sw-site-head">
       <a class="sw-brand" href="/" aria-current={path === '/' ? 'page' : undefined}>{BRAND}</a>
       <nav class="sw-site-nav" aria-label="Browse">
-        <a href="/" aria-current={path === '/' ? 'page' : undefined}>Map</a>
-        <a href="/shelf" aria-current={path === '/shelf' ? 'page' : undefined}>Shelf</a>
-        <a href="/writing" aria-current={path === '/writing' || path.startsWith('/writing/tags') ? 'page' : undefined}>Archive</a>
+        <a href="/" aria-current={path === '/' ? 'page' : undefined}>Shelf</a>
+        <a href="/map" aria-current={path === '/map' ? 'page' : undefined}>Map</a>
         <ThemeToggle />
       </nav>
     </header>

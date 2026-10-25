@@ -8,7 +8,7 @@ const posts = await getPosts();
 const map = buildMetro(posts);
 ---
 
-<Layout description="Notes on building software, Web3, cryptography and whatever I'm deep in at the time.">
+<Layout title="Map" description="Every essay by Suyog Adhikari on a metro map: topics are lines, essays are stations.">
   <p class="sw-intro">Notes on building software, Web3, cryptography and whatever I'm deep in at the time.</p>
   {
     posts.length === 0 ? (
@@ -17,5 +17,5 @@ const map = buildMetro(posts);
       <MetroMap map={map} />
     )
   }
-  <p class="sw-elsewhere">Browse another way: <a href="/shelf">the shelf</a> or <a href="/writing">the archive</a>.</p>
+  <p class="sw-elsewhere">Browse another way: <a href="/">the shelf</a>.</p>
 </Layout>
