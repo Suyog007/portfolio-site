@@ -104,6 +104,41 @@ No secrets are needed: there is no backend, database or login.
 - Fonts (Instrument Serif and Inter) are self-hosted through Astro's font support, so there are no requests to Google at runtime.
 - `npm audit` reports a moderate issue in `fflate`, a dependency of `satori`. It only affects unzipping untrusted ZIP files, which this build never does.
 
+## The writing site (writing.suyogadhikari.tech)
+
+The writing subdomain is a second build of this repo with its own design (the "Suyog's Writing" design system: the Metro Map home, reading pages, shelf and archive). It reads the same posts in `src/content/posts/`.
+
+- `src-writing/` holds its pages, components, layout and styles. It is used instead of `src/` when `WRITING_HOME` is set (see `astro.config.mjs`), so the portfolio build is unaffected.
+- Commands: `npm run dev:writing`, `npm run build:writing`, `npm run check:writing`. After switching between the two sites, run `npx astro sync` once before `npm run check`.
+- Netlify: the writing project sets `WRITING_HOME=1` and `SITE_URL`; the build command in `netlify.toml` is shared.
+- Fonts (Fraunces, Source Serif 4, Caveat, Courier Prime) are self-hosted through Astro's font support, like the portfolio's.
+- Tokens are in `src-writing/styles/tokens.css` (generated from the design system's `tokens.json`) and the component styles in `bundle.css`. Keep the values exact; change the design system first.
+
+### The Metro Map
+
+Each topic is a line, each post a station, and a post on two or more lines is an interchange. The map is generated at build time from post tags.
+
+- `src-writing/metro.config.ts` sets each line's name, letter, colour, the tags that put a post on it, and its route on the 40px grid (90° and 45° turns only).
+- Stops are placed along their line in date order. Interchanges sit where their lines cross, so give lines that share posts routes that cross at a grid point. A warning is printed at build time if two lines should share a post but never cross.
+- New posts are placed automatically. To override one, add `stations: { 'post-file-name': { at: [x, y], label: 'ne' } }` to the config.
+- A post whose tags match no line goes on the `fallback` line.
+- Frontmatter extras: `short: "Short title"` for the map label (otherwise the title before a colon is used) and `featured: true` to show a post face-out on the shelf.
+- Under 640px wide the map is replaced by one line strip per topic.
+
+### Margin notes
+
+Margin notes work in `.mdx` posts (rename the file from `.md`). Import the component and wrap the paragraph:
+
+```mdx
+import Annotated from '../../../src-writing/components/Annotated.astro';
+
+<Annotated note="still true, a year later">
+  I used to think writing was about having something to say. Now I think it is about <mark>noticing what you already said</mark>.
+</Annotated>
+```
+
+Wrap the phrase you are answering in `<mark>` for the wavy underline. Keep notes under eight words and use one every few paragraphs. The notes are styled on the writing site; the portfolio's own `/writing` pages show them as plain text.
+
 ## Maintenance
 
 - `npx @astrojs/upgrade` upgrades Astro and its integrations together; then run `npm run check && npm run build`.
