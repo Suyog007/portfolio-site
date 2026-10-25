@@ -1,0 +1,96 @@
+/* Generated from the Suyog's Writing design system (tokens.json). Values are exact; edit the design system, not this file.
+   Fonts come from Astro's font provider (see astro.config.mjs), which defines the --font-sw-* variables. */
+:root {
+  --spine-navy: #2f4566;
+  --spine-oxblood: #7a2e2a;
+  --spine-forest: #2f5a45;
+  --spine-plum: #5b3d63;
+  --spine-clay: #a4502f;
+  --spine-mustard: #d2a641;
+  --spine-bone: #ece4d2;
+  --on-spine: #f5efe2;
+  --on-spine-light: #2b2418;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --radius-spine: 2px;
+  --radius-card: 4px;
+  --radius-round: 999px;
+  --spine-height-min: 180px;
+  --spine-height-max: 300px;
+  --spine-width-min: 28px;
+  --spine-width-max: 64px;
+  --plank-height: 18px;
+  --lean-angle: 8deg;
+  --lift: -12px;
+  --metro-line-width: 8px;
+  --metro-grid: 40px;
+  --metro-station-size: 12px;
+  --wall: #dfe4d7;
+  --wall-deep: #cfd6c4;
+  --paper: #fbf7ee;
+  --ink: #23261f;
+  --ink-muted: #565c51;
+  --hairline: #b9c0ad;
+  --oak: #c9a26b;
+  --oak-edge: #a9814b;
+  --tag-paper: #fbf7ee;
+  --tag-ink: #b23a2a;
+  --note-ink: #b23a2a;
+  --stamp: #8e2f25;
+  --focus: #2f4566;
+  --shadow-book: inset -3px 0 6px rgba(0,0,0,0.18), 1px 0 0 rgba(0,0,0,0.10);
+  --shadow-plank: 0 12px 18px -8px rgba(60,45,20,0.35);
+  --shadow-card: 0 2px 6px rgba(40,40,30,0.18);
+  --font-display: var(--font-sw-display), "Libre Caslon Text", Georgia, serif;
+  --font-serif: var(--font-sw-serif), Georgia, serif;
+  --font-hand: var(--font-sw-hand), "Segoe Print", cursive;
+  --font-mono: var(--font-sw-mono), "Courier New", monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --wall: #1b1e19;
+    --wall-deep: #252922;
+    --paper: #2b2a24;
+    --ink: #ece7dc;
+    --ink-muted: #a9ae9f;
+    --hairline: #3d4237;
+    --oak: #7a5a36;
+    --oak-edge: #5a4127;
+    --tag-paper: #f1ead8;
+    --tag-ink: #a3311f;
+    --note-ink: #e48a72;
+    --stamp: #e07a62;
+    --focus: #9fb6d8;
+    --shadow-book: inset -3px 0 6px rgba(0,0,0,0.35), 1px 0 0 rgba(0,0,0,0.4);
+    --shadow-plank: 0 12px 18px -8px rgba(0,0,0,0.6);
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.5);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --wall: #1b1e19;
+  --wall-deep: #252922;
+  --paper: #2b2a24;
+  --ink: #ece7dc;
+  --ink-muted: #a9ae9f;
+  --hairline: #3d4237;
+  --oak: #7a5a36;
+  --oak-edge: #5a4127;
+  --tag-paper: #f1ead8;
+  --tag-ink: #a3311f;
+  --note-ink: #e48a72;
+  --stamp: #e07a62;
+  --focus: #9fb6d8;
+  --shadow-book: inset -3px 0 6px rgba(0,0,0,0.35), 1px 0 0 rgba(0,0,0,0.4);
+  --shadow-plank: 0 12px 18px -8px rgba(0,0,0,0.6);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.5);
+  color-scheme: dark;
+}

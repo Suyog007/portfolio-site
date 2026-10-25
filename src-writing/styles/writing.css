@@ -1,0 +1,373 @@
+/* Glue for the writing site: page frame, the pieces the design system leaves to the page,
+   and the long-form typography for essay bodies. Component styles live in bundle.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: -4rem;
+  z-index: 10;
+  padding: var(--space-2) var(--space-3);
+  background: var(--ink);
+  color: var(--wall);
+  border-radius: var(--radius-card);
+}
+.skip-link:focus {
+  top: var(--space-3);
+}
+
+/* ---------- page frame ---------- */
+
+.sw-site-head,
+main,
+.sw-site-foot {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+.sw-site-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-6);
+}
+
+.sw-brand {
+  font: 500 26px/1 var(--font-display);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.sw-site-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.sw-site-nav a {
+  font: 700 13px/16px var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: var(--space-1) 0;
+  border-bottom: 2px solid transparent;
+}
+.sw-site-nav a:hover,
+.sw-site-nav a[aria-current='page'] {
+  border-bottom-color: var(--ink);
+}
+
+main {
+  flex: 1;
+  padding-bottom: var(--space-12);
+}
+
+.sw-site-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  padding-block: var(--space-6);
+  border-top: 1px solid var(--hairline);
+  color: var(--ink-muted);
+  font: 400 14px/20px var(--font-serif);
+}
+.sw-site-foot span {
+  margin-left: auto;
+}
+
+.sw-intro {
+  max-width: 34em;
+  margin: 0 0 var(--space-6);
+  font: italic 400 22px/32px var(--font-serif);
+  color: var(--ink-muted);
+}
+
+.sw-page-title {
+  margin: 0 0 var(--space-3);
+  font: 400 64px/64px var(--font-display);
+  letter-spacing: -0.01em;
+}
+@media (max-width: 640px) {
+  .sw-page-title {
+    font-size: 44px;
+    line-height: 46px;
+  }
+}
+
+.sw-elsewhere {
+  margin: var(--space-6) 0 0;
+  font: 400 16px/24px var(--font-serif);
+  color: var(--ink-muted);
+}
+.sw-elsewhere a {
+  color: var(--ink);
+}
+
+/* ---------- metro map glue ---------- */
+
+.sw-metro__wrap {
+  position: relative;
+}
+
+.sw-metro__stop:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* the clay and bone lines have no badge fill in bundle.css */
+.sw-metro__badge.b-clay {
+  fill: var(--spine-clay);
+}
+.sw-metro__badge.b-bone {
+  fill: var(--spine-bone);
+}
+.sw-badge.l-bone {
+  color: var(--on-spine-light);
+}
+.l-bone {
+  --line: var(--spine-bone);
+}
+
+.sw-metro__cards .sw-station {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+}
+.sw-metro__cards .sw-station[hidden] {
+  display: none;
+}
+.sw-metro__cards .sw-station::after {
+  left: var(--pointer, 50%);
+}
+@media (hover: none) {
+  .sw-metro__cards .sw-station {
+    pointer-events: auto;
+  }
+}
+
+.sw-strips {
+  display: none;
+}
+.sw-strip-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  font: 500 20px/24px var(--font-display);
+}
+@media (max-width: 639px) {
+  .sw-metro__wrap,
+  .sw-metro .sw-legend {
+    display: none;
+  }
+  .sw-strips {
+    display: grid;
+    gap: var(--space-8);
+    padding: var(--space-6) var(--space-2) 0;
+  }
+}
+
+/* ---------- reading page ---------- */
+
+.sw-read__crumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+}
+
+.sw-read__body > *:last-child {
+  margin-bottom: 0;
+}
+
+.sw-read__body h2 {
+  margin: var(--space-12) 0 var(--space-4);
+  font: 500 28px/34px var(--font-display);
+}
+.sw-read__body h3 {
+  margin: var(--space-8) 0 var(--space-3);
+  font: 500 22px/28px var(--font-display);
+}
+.sw-read__body > ul,
+.sw-read__body > ol {
+  max-width: 34em;
+  margin: 0 0 var(--space-6);
+  padding-left: 1.4em;
+  font: 400 19px/31px var(--font-serif);
+}
+.sw-read__body li + li {
+  margin-top: var(--space-2);
+}
+.sw-read__body a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+.sw-read__body strong {
+  font-weight: 600;
+}
+.sw-read__body blockquote {
+  max-width: 34em;
+  margin: 0 0 var(--space-6);
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--hairline);
+  color: var(--ink-muted);
+  font: italic 400 19px/31px var(--font-serif);
+}
+.sw-read__body blockquote p {
+  margin: 0;
+}
+.sw-read__body hr {
+  margin: var(--space-8) 0;
+  border: 0;
+  border-top: 1px solid var(--hairline);
+}
+.sw-read__body code {
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-card);
+  background: var(--wall-deep);
+  font: 400 0.85em/1 var(--font-mono);
+}
+.sw-read__body pre {
+  max-width: 100%;
+  margin: 0 0 var(--space-6);
+  padding: var(--space-4);
+  overflow-x: auto;
+  border-radius: var(--radius-card);
+  background: var(--wall-deep) !important;
+  font: 400 14px/22px var(--font-mono);
+}
+.sw-read__body pre code {
+  padding: 0;
+  background: none;
+  font: inherit;
+}
+.sw-read__body figure {
+  margin: 0 0 var(--space-6);
+}
+.sw-read__body figure img,
+.sw-read__body img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-card);
+}
+.sw-read__body figcaption {
+  margin-top: var(--space-2);
+  font: 400 14px/20px var(--font-serif);
+  color: var(--ink-muted);
+  text-align: center;
+}
+/* the design system's body rhythm also applies to paragraphs wrapped in a note */
+.sw-read__body .sw-annotated {
+  margin: 0 0 var(--space-6);
+}
+.sw-read__body .sw-annotated p {
+  max-width: 34em;
+}
+
+:root[data-theme='dark'] .astro-code,
+:root[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .astro-code,
+  :root:not([data-theme='light']) .astro-code span {
+    color: var(--shiki-dark) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+  }
+}
+
+.sw-draft {
+  display: inline-block;
+  margin: 0 0 var(--space-4);
+}
+
+.sw-after {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 760px;
+  margin: var(--space-8) auto 0;
+}
+.sw-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  max-width: 760px;
+  margin: var(--space-6) auto 0;
+  padding: 0;
+  list-style: none;
+}
+.sw-tags a {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-round);
+  font: 400 14px/20px var(--font-serif);
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+.sw-tags a:hover {
+  color: var(--ink);
+  border-color: var(--ink-muted);
+}
+
+/* ---------- archive (card catalog) ---------- */
+
+.sw-drawer {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+}
+.sw-drawer__label {
+  grid-column: 1 / -1;
+}
+.sw-drawer .sw-card {
+  max-width: none;
+}
+.sw-card:hover {
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--hairline);
+}
+
+/* ---------- shelf ---------- */
+
+.sw-shelf {
+  margin-bottom: var(--space-12);
+}
+.sw-shelf__row {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+.sw-shelf + .sw-shelf {
+  margin-top: var(--space-12);
+}
