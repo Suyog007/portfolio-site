@@ -17,8 +17,11 @@ export const LINKS = {
   linkedin: 'https://www.linkedin.com/in/suyog-adhikari-5b483718a',
 } as const;
 
+// Writing lives on its own subdomain, served from a second Netlify project.
+export const WRITING_URL = 'https://writing.suyogadhikari.tech';
+
 export const NAV = [
-  { href: '/writing', label: 'Writing' },
+  { href: WRITING_URL, label: 'Writing' },
   { href: '/projects', label: 'Projects' },
   { href: '/about', label: 'About' },
   { href: '/resume', label: 'Resume' },

@@ -4,7 +4,7 @@ import Base from '../layouts/Base.astro';
 import PostList from '../components/PostList.astro';
 import ProjectItem from '../components/ProjectItem.astro';
 import { getPosts } from '../lib/posts';
-import { LINKS, SITE } from '../site.config';
+import { LINKS, SITE, WRITING_URL } from '../site.config';
 
 const posts = (await getPosts()).slice(0, 3);
 const projects = (await getCollection('projects', ({ data }) => data.featured)).sort(
@@ -46,7 +46,7 @@ const projects = (await getCollection('projects', ({ data }) => data.featured)).
   <section class="section" aria-labelledby="writing">
     <div class="section-head">
       <h2 id="writing">Writing</h2>
-      {posts.length > 0 && <a class="more" href="/writing">All writing →</a>}
+      {posts.length > 0 && <a class="more" href={WRITING_URL}>All writing →</a>}
     </div>
     {posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">Nothing published yet. The first post is on its way.</p>}
   </section>
