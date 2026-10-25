@@ -1,21 +1,64 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import MetroMap from '../components/MetroMap.astro';
-import { getPosts } from '../../src/lib/posts';
+import { getPosts, readingTime } from '../../src/lib/posts';
+import { monthYear, wordCount } from '../lib/format';
 import { buildMetro } from '../lib/metro';
 
 const posts = await getPosts();
 const map = buildMetro(posts);
+const newest = [...map.stations].sort((a, b) => b.post.data.date.valueOf() - a.post.data.date.valueOf())[0];
+
+// An essay's data becomes its book: height from word count, width from reading time (see the design system).
+const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
+const height = (words: number) => Math.round(180 + ((clamp(words, 500, 3000) - 500) / 2500) * 120);
+const width = (minutes: number) => Math.round(28 + ((clamp(minutes, 2, 15) - 2) / 13) * 36);
+
+const shelves = new Map<number, typeof map.stations>();
+for (const s of [...map.stations].sort((a, b) => b.post.data.date.valueOf() - a.post.data.date.valueOf())) {
+  const year = s.post.data.date.getUTCFullYear();
+  shelves.set(year, [...(shelves.get(year) ?? []), s]);
+}
 ---
 
-<Layout description="Notes on building software, Web3, cryptography and whatever I'm deep in at the time.">
-  <p class="sw-intro">Notes on building software, Web3, cryptography and whatever I'm deep in at the time.</p>
+<Layout title="Shelf" description="Every essay by Suyog Adhikari as a book on a shelf: taller for longer, wider for slower reads.">
+  <h1 class="sw-page-title">Essays, shelved.</h1>
+  <p class="sw-intro">Taller books are longer essays, wider books take longer to read, and the colour is the topic line.</p>
+
   {
-    posts.length === 0 ? (
-      <p class="sw-intro">Nothing published yet. The first essay is on its way.</p>
-    ) : (
-      <MetroMap map={map} />
-    )
+    [...shelves].map(([year, stations]) => (
+      <section class="sw-shelf" aria-label={`Essays from ${year}`}>
+        <div class="sw-shelf__row">
+          <span class="sw-tab sw-tab--year">{year}</span>
+          {stations.map((s) => {
+            const words = wordCount(s.post.body);
+            const minutes = readingTime(s.post.body);
+            const style = `--h:${height(words)}px;--w:${width(minutes)}px`;
+            const meta = s === newest ? 'New' : monthYear(s.post.data.date);
+            return s.post.data.featured ? (
+              <a href={s.url} class={`sw-cover sw-cover--${s.main.color}`} title={s.title}>
+                <span class="sw-cover__title">{s.title}</span>
+                <span class="sw-cover__meta">
+                  {s.main.name} · {minutes} min
+                </span>
+              </a>
+            ) : (
+              <a
+                href={s.url}
+                class:list={['sw-spine', `sw-spine--${s.main.color}`, { 'sw-spine--lean': s === newest }]}
+                style={style}
+                title={s.title}
+                aria-label={`${s.title}, ${s.main.name}, ${minutes} min read`}
+              >
+                <span class="sw-spine__title">{s.title}</span>
+                <span class="sw-spine__meta">{meta}</span>
+              </a>
+            );
+          })}
+        </div>
+        <div class="sw-shelf__plank" />
+      </section>
+    ))
   }
-  <p class="sw-elsewhere">Browse another way: <a href="/shelf">the shelf</a> or <a href="/writing">the archive</a>.</p>
+
+  <p class="sw-elsewhere">Browse another way: <a href="/">the map</a> or <a href="/writing">the archive</a>.</p>
 </Layout>

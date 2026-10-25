@@ -124,14 +124,18 @@ const letterClass = (color: string) => (color === 'mustard' || color === 'bone' 
 
   <div class="sw-strips">
     {
-      map.lines.map((line) => (
+      // Each essay is listed once, under its main line; its other lines show as badges to change to.
+      map.lines
+        .map((line) => ({ line, own: line.stations.filter((s) => s.main.id === line.config.id) }))
+        .filter(({ own }) => own.length > 0)
+        .map(({ line, own }) => (
         <section class="sw-strips__line" aria-label={`${line.config.name} line`}>
           <p class="sw-strip-head">
             <LineBadge line={line.config} />
             {line.config.name} line
           </p>
           <ol class={`sw-strip l-${line.config.color}`}>
-            {line.stations.map((s, i) => {
+            {own.map((s, i) => {
               const others = s.lines.filter((l) => l.id !== line.config.id);
               const small = s.isNew
                 ? `New · ${monthYear(s.post.data.date)}`

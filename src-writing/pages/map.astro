@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MetroMap from '../components/MetroMap.astro';
+import { getPosts } from '../../src/lib/posts';
+import { buildMetro } from '../lib/metro';
+
+const posts = await getPosts();
+const map = buildMetro(posts);
+---
+
+<Layout description="Notes on building software, Web3, cryptography and whatever I'm deep in at the time.">
+  <p class="sw-intro">Notes on building software, Web3, cryptography and whatever I'm deep in at the time.</p>
+  {
+    posts.length === 0 ? (
+      <p class="sw-intro">Nothing published yet. The first essay is on its way.</p>
+    ) : (
+      <MetroMap map={map} />
+    )
+  }
+  <p class="sw-elsewhere">Browse another way: <a href="/shelf">the shelf</a> or <a href="/writing">the archive</a>.</p>
+</Layout>
