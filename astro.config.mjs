@@ -17,6 +17,8 @@ const writing = Boolean(process.env.WRITING_HOME);
 export default defineConfig({
   site,
   srcDir: writing ? './src-writing' : './src',
+  // The writing site's old list page and the first shelf URL now lead to the shelf, which is the home page.
+  redirects: writing ? { '/writing': '/', '/shelf': '/' } : {},
   trailingSlash: 'never',
   build: { format: 'file' },
   devToolbar: { enabled: false },

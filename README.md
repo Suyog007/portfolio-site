@@ -114,7 +114,7 @@ The writing subdomain is a second build of this repo with its own design (the "S
 - Fonts (Fraunces, Source Serif 4, Caveat, Courier Prime) are self-hosted through Astro's font support, like the portfolio's.
 - Tokens are in `src-writing/styles/tokens.css` (generated from the design system's `tokens.json`) and the component styles in `bundle.css`. Keep the values exact; change the design system first.
 
-### The Metro Map
+### The Metro Map (`/map`)
 
 Each topic is a line, each post a station, and a post on two or more lines is an interchange. The map is generated at build time from post tags.
 
@@ -123,7 +123,11 @@ Each topic is a line, each post a station, and a post on two or more lines is an
 - New posts are placed automatically. To override one, add `stations: { 'post-file-name': { at: [x, y], label: 'ne' } }` to the config.
 - A post whose tags match no line goes on the `fallback` line.
 - Frontmatter extras: `short: "Short title"` for the map label (otherwise the title before a colon is used) and `featured: true` to show a post face-out on the shelf.
-- Under 640px wide the map is replaced by one line strip per topic.
+- Under 640px wide the map is replaced by one line strip per topic. Each essay appears once, under its main line, with badges for the lines it connects to.
+
+### The shelf (home page)
+
+Every essay is a book: height from word count, width from reading time, colour from its main line. The whole title is printed on the spine, so a long title on a short essay makes the book a little taller and wider than its length alone would. `/writing`, `/writing/tags/*` and `/shelf` redirect to `/`.
 
 ### Margin notes
 
