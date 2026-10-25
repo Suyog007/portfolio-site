@@ -1,0 +1,37 @@
+---
+import type { MetroLine, Station } from '../lib/metro';
+import LineBadge from './LineBadge.astro';
+
+export interface Props {
+  line: MetroLine;
+  prev?: Station;
+  next?: Station;
+}
+
+const { line, prev, next } = Astro.props;
+---
+
+<nav class={`sw-journey l-${line.config.color}`} aria-label={`More on the ${line.config.name} line`}>
+  <div>
+    {
+      prev && (
+        <>
+          <small>← Previous stop</small>
+          <a href={prev.url}>{prev.title}</a>
+        </>
+      )
+    }
+  </div>
+  <LineBadge line={line.config} bar class="sw-journey__line" />
+  <div class="sw-journey__next">
+    {
+      next && (
+        <>
+          <small>Next stop →</small>
+          <a href={next.url}>{next.title}</a>
+        </>
+      )
+    }
+  </div>
+  <div class="sw-journey__track"><span class="sw-journey__now"></span></div>
+</nav>

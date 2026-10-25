@@ -1,0 +1,71 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import JourneyNav from '../../components/JourneyNav.astro';
+import Annotated from '../../components/Annotated.astro';
+import { getPosts, tagSlug } from '../../../src/lib/posts';
+import { buildMetro, journeysFor } from '../../lib/metro';
+import { stampDate, wordCount } from '../../lib/format';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post, posts } }));
+}) satisfies GetStaticPaths;
+
+const { post, posts } = Astro.props;
+const { title, description, date, updated, tags, draft } = post.data;
+const { Content } = await render(post);
+
+const map = buildMetro(posts);
+const station = map.stations.find((s) => s.id === post.id);
+const main = station?.main;
+const journeys = journeysFor(map, post).filter((j) => j.prev || j.next);
+const words = wordCount(post.body);
+const minutes = station?.minutes ?? Math.max(1, Math.round(words / 220));
+---
+
+<Layout
+  title={title}
+  description={description}
+  image={`/og/writing/${post.id}.png`}
+  article={{ published: date, modified: updated, tags }}
+  noindex={draft}
+>
+  <article class="sw-read" style={main ? `--bg:var(--spine-${main.color})` : undefined}>
+    <div class="sw-read__band"></div>
+    <div class="sw-read__inner">
+      <p class="sw-read__crumb">
+        <a href="/">← Back to the map</a>
+        {main && <span>· {main.name}</span>}
+      </p>
+      {draft && <span class="sw-stamp sw-stamp--flat sw-draft">Draft · only visible in dev</span>}
+      <h1>{title}</h1>
+      <p class="sw-read__lede">{description}</p>
+      <div class="sw-read__meta">
+        <span class="sw-stamp">Shelved {stampDate(date)}</span>
+        {updated && <span class="sw-stamp sw-stamp--flat">Revised {stampDate(updated)}</span>}
+        <span>{words.toLocaleString('en-US')} words · {minutes} min read</span>
+      </div>
+      <div class="sw-read__body">
+        <Content components={{ Annotated }} />
+      </div>
+    </div>
+  </article>
+
+  <div class="sw-after">
+    {journeys.map(({ line, prev, next }) => <JourneyNav line={line} prev={prev} next={next} />)}
+  </div>
+
+  {
+    tags.length > 0 && (
+      <ul class="sw-tags" aria-label="Tags">
+        {tags.map((tag) => (
+          <li>
+            <a href={`/writing/tags/${tagSlug(tag)}`}>{tag}</a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Layout>
