@@ -1,0 +1,24 @@
+---
+import type { LineConfig } from '../metro.config';
+
+export interface Props {
+  line: LineConfig;
+  /** Long form: the letter in a disc followed by the line's name. */
+  bar?: boolean;
+  class?: string;
+}
+
+const { line, bar = false, class: extra } = Astro.props;
+---
+
+{
+  bar ? (
+    <span class:list={['sw-badge', 'sw-badge--bar', `l-${line.color}`, extra]} data-letter={line.letter}>
+      {line.name} line
+    </span>
+  ) : (
+    <span class:list={['sw-badge', `l-${line.color}`, extra]} title={`${line.name} line`}>
+      {line.letter}
+    </span>
+  )
+}

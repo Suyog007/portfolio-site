@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CatalogCard from '../../components/CatalogCard.astro';
+import { getPosts, getTags } from '../../../src/lib/posts';
+import { buildMetro } from '../../lib/metro';
+import { catalog } from '../../lib/archive';
+
+const posts = await getPosts();
+const map = buildMetro(posts);
+const { number, seeAlso } = catalog(map);
+const tags = getTags(posts);
+const stations = [...map.stations].sort((a, b) => b.post.data.date.valueOf() - a.post.data.date.valueOf());
+---
+
+<Layout title="Archive" description="Every essay by Suyog Adhikari, filed like cards in a library drawer.">
+  <h1 class="sw-page-title">Archive</h1>
+  <p class="sw-intro">Every essay, newest first.</p>
+  {
+    tags.length > 0 && (
+      <ul class="sw-tags" style="max-width:none;margin:0 0 var(--space-8)" aria-label="Filter by tag">
+        {tags.map((tag) => (
+          <li>
+            <a href={`/writing/tags/${tag.slug}`}>
+              {tag.name} {tag.count}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  <div class="sw-drawer">
+    <span class="sw-drawer__label">ALL ESSAYS · NEWEST FIRST</span>
+    {stations.map((s) => <CatalogCard station={s} number={number(s)} seeAlso={seeAlso(s)} />)}
+  </div>
+</Layout>

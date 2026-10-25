@@ -1,0 +1,28 @@
+---
+// A paragraph with a hand-written margin note, for use inside .mdx posts:
+//
+//   <Annotated note="the best advice I never took">
+//     Most mornings I wrote one paragraph. <mark>The deleting was the part that mattered.</mark>
+//   </Annotated>
+//
+// <mark> gives the phrase you are responding to a wavy underline. Keep notes under 8 words.
+export interface Props {
+  note: string;
+}
+
+const { note } = Astro.props;
+---
+
+<div class="sw-annotated">
+  <div class="sw-annotated__text"><slot /></div>
+  <span class="sw-note">{note}</span>
+</div>
+
+<style is:global>
+  .sw-annotated__text {
+    font: 400 19px/31px var(--font-serif);
+  }
+  .sw-annotated__text p {
+    margin: 0;
+  }
+</style>

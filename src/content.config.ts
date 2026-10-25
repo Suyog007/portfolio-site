@@ -13,6 +13,9 @@ const posts = defineCollection({
     updated: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    // Optional extras used by the writing subdomain's design.
+    short: z.string().max(40).optional(), // shorter title for the metro map label
+    featured: z.boolean().default(false), // shown face-out on the shelf
   }),
 });
 

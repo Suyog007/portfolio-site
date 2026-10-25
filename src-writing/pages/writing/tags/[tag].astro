@@ -1,0 +1,32 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../../layouts/Layout.astro';
+import CatalogCard from '../../../components/CatalogCard.astro';
+import { getPosts, getTags, tagSlug } from '../../../../src/lib/posts';
+import { buildMetro } from '../../../lib/metro';
+import { catalog } from '../../../lib/archive';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return getTags(posts).map((tag) => ({
+    params: { tag: tag.slug },
+    props: { tag, posts },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tag, posts } = Astro.props;
+const map = buildMetro(posts);
+const { number, seeAlso } = catalog(map);
+const stations = map.stations
+  .filter((s) => s.post.data.tags.some((t) => tagSlug(t) === tag.slug))
+  .sort((a, b) => b.post.data.date.valueOf() - a.post.data.date.valueOf());
+---
+
+<Layout title={`${tag.name} · Archive`} description={`Essays by Suyog Adhikari tagged ${tag.name}.`}>
+  <h1 class="sw-page-title">{tag.name}</h1>
+  <p class="sw-intro">{stations.length} {stations.length === 1 ? 'essay' : 'essays'} tagged {tag.name}. <a href="/writing">All essays</a></p>
+  <div class="sw-drawer">
+    <span class="sw-drawer__label">{tag.name.toUpperCase()}</span>
+    {stations.map((s) => <CatalogCard station={s} number={number(s)} seeAlso={seeAlso(s)} />)}
+  </div>
+</Layout>
