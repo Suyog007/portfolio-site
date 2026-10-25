@@ -4,7 +4,7 @@ import { render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import JourneyNav from '../../components/JourneyNav.astro';
 import Annotated from '../../components/Annotated.astro';
-import { getPosts, tagSlug } from '../../../src/lib/posts';
+import { getPosts } from '../../../src/lib/posts';
 import { buildMetro, journeysFor } from '../../lib/metro';
 import { stampDate, wordCount } from '../../lib/format';
 
@@ -36,7 +36,7 @@ const minutes = station?.minutes ?? Math.max(1, Math.round(words / 220));
     <div class="sw-read__band"></div>
     <div class="sw-read__inner">
       <p class="sw-read__crumb">
-        <a href="/">← Back to the map</a>
+        <a href="/">← Back to the shelf</a>
         {main && <span>· {main.name}</span>}
       </p>
       {draft && <span class="sw-stamp sw-stamp--flat sw-draft">Draft · only visible in dev</span>}
@@ -62,7 +62,7 @@ const minutes = station?.minutes ?? Math.max(1, Math.round(words / 220));
       <ul class="sw-tags" aria-label="Tags">
         {tags.map((tag) => (
           <li>
-            <a href={`/writing/tags/${tagSlug(tag)}`}>{tag}</a>
+            <span>{tag}</span>
           </li>
         ))}
       </ul>
