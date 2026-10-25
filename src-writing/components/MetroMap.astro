@@ -1,0 +1,228 @@
+---
+import type { MetroMapData, Station } from '../lib/metro';
+import { monthYear, plural } from '../lib/format';
+import LineBadge from './LineBadge.astro';
+
+export interface Props {
+  map: MetroMapData;
+}
+
+const { map } = Astro.props;
+const radius = (s: Station) => (s.kind === 'terminus' ? 13 : s.kind === 'interchange' ? 11 : 6);
+
+const meta = (s: Station) => {
+  if (s.kind === 'interchange') return `Interchange · ${s.lines.map((l) => l.name).join(', ')} · ${s.minutes} min read`;
+  const line = map.lineById.get(s.main.id)!;
+  const n = line.stations.indexOf(s) + 1;
+  return `${s.main.name} line · stop ${n} of ${line.stations.length} · ${s.minutes} min read`;
+};
+const ariaLabel = (s: Station) => `${s.title}. ${meta(s)}`;
+const letterClass = (color: string) => (color === 'mustard' || color === 'bone' ? 'dark' : '');
+---
+
+<section class="sw-metro" data-metro>
+  <div class="sw-metro__head">
+    <h1 class="sw-metro__title">The Essay Network</h1>
+    <span class="sw-stamp sw-stamp--flat">{plural(map.stations.length, 'station')} · {plural(map.lines.length, 'line')}</span>
+  </div>
+
+  <div class="sw-metro__wrap">
+    <div class="sw-metro__scroll">
+      <svg
+        class="sw-metro__svg"
+        viewBox={`0 0 ${map.width} ${map.height}`}
+        role="group"
+        aria-label={`Metro map of essays: ${plural(map.lines.length, 'topic line')} and ${plural(map.stations.length, 'station')}`}
+      >
+        {map.lines.map((line) => <polyline class={`sw-metro__line l-${line.config.color}`} points={line.points} />)}
+
+        {
+          map.lines.flatMap((line) =>
+            [line.start, line.end]
+              .filter((end) => !end.station)
+              .map((end) => (
+                <g aria-hidden="true">
+                  <circle class={`sw-metro__badge b-${line.config.color}`} cx={end.x} cy={end.y} r="13" />
+                  <text class={`sw-metro__letter ${letterClass(line.config.color)}`} x={end.x} y={end.y + 5}>
+                    {line.config.letter}
+                  </text>
+                </g>
+              )),
+          )
+        }
+
+        {
+          map.stations.map((s) => (
+            <a href={s.url} class="sw-metro__stop" aria-label={ariaLabel(s)} data-station={s.id}>
+              {s.kind === 'terminus' && s.terminusOf && (
+                <>
+                  <circle class={`sw-metro__badge b-${s.terminusOf.color}`} cx={s.x} cy={s.y} r="13" />
+                  <text class={`sw-metro__letter ${letterClass(s.terminusOf.color)}`} x={s.x} y={s.y + 5}>
+                    {s.terminusOf.letter}
+                  </text>
+                </>
+              )}
+              {s.kind === 'interchange' && <circle class="sw-metro__inter" cx={s.x} cy={s.y} r="11" />}
+              {s.kind === 'stop' && <circle class={`sw-metro__station l-${s.main.color}`} cx={s.x} cy={s.y} r="6" />}
+              <text class="sw-metro__label" x={s.label.x} y={s.label.y} text-anchor={s.label.anchor}>
+                {s.label.lines.map((line, i) => (
+                  <tspan x={s.label.x} dy={i === 0 ? 0 : 16}>
+                    {line}
+                  </tspan>
+                ))}
+              </text>
+            </a>
+          ))
+        }
+
+        {
+          map.stations
+            .filter((s) => s.isNew && s.newTag)
+            .map((s) => (
+              <g class="sw-metro__here" aria-hidden="true">
+                <text class="sw-metro__new" x={s.newTag!.x} y={s.newTag!.y}>
+                  NEW
+                </text>
+              </g>
+            ))
+        }
+      </svg>
+    </div>
+
+    <div class="sw-metro__cards" aria-hidden="true">
+      {
+        map.stations.map((s) => (
+          <div class="sw-station" data-card={s.id} hidden style={`--r:${radius(s)}px`}>
+            <div class="sw-station__lines">
+              {s.lines.map((l) => (
+                <LineBadge line={l} />
+              ))}
+            </div>
+            <div class="sw-station__body">
+              <p class="sw-station__name">{s.title}</p>
+              <p class="sw-station__meta">{meta(s)}</p>
+              <a href={s.url} class="sw-station__go" tabindex="-1">
+                Board this essay →
+              </a>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <ul class="sw-legend">
+    {
+      map.lines.map((line) => (
+        <li>
+          <LineBadge line={line.config} />
+          {line.config.name} <small>{plural(line.stations.length, 'stop')}</small>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="sw-strips">
+    {
+      map.lines.map((line) => (
+        <section class="sw-strips__line" aria-label={`${line.config.name} line`}>
+          <p class="sw-strip-head">
+            <LineBadge line={line.config} />
+            {line.config.name} line
+          </p>
+          <ol class={`sw-strip l-${line.config.color}`}>
+            {line.stations.map((s, i) => {
+              const others = s.lines.filter((l) => l.id !== line.config.id);
+              const small = s.isNew
+                ? `New · ${monthYear(s.post.data.date)}`
+                : others.length
+                  ? `Change for ${others.map((l) => l.name).join(', ')}`
+                  : i === 0
+                    ? `Terminus · ${monthYear(s.post.data.date)}`
+                    : monthYear(s.post.data.date);
+              return (
+                <li>
+                  <span class:list={['sw-strip__dot', { 'sw-strip__dot--inter': others.length > 0 }]} />
+                  <a href={s.url}>
+                    {s.title}
+                    {others.map((l) => (
+                      <LineBadge line={l} />
+                    ))}
+                    <small>{small}</small>
+                  </a>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-metro]');
+  const wrap = root?.querySelector<HTMLElement>('.sw-metro__wrap');
+  const svg = root?.querySelector<SVGSVGElement>('.sw-metro__svg');
+  if (root && wrap && svg) {
+    let open: string | null = null;
+
+    const cardFor = (id: string) => wrap.querySelector<HTMLElement>(`[data-card="${CSS.escape(id)}"]`);
+
+    const hide = () => {
+      wrap.querySelectorAll<HTMLElement>('[data-card]').forEach((c) => (c.hidden = true));
+      open = null;
+    };
+
+    const show = (stop: Element) => {
+      const id = (stop as HTMLElement).dataset.station;
+      const card = id ? cardFor(id) : null;
+      const dot = stop.querySelector('circle');
+      if (!id || !card || !dot) return;
+      hide();
+      card.hidden = false;
+      const box = wrap.getBoundingClientRect();
+      const at = dot.getBoundingClientRect();
+      const cx = at.left + at.width / 2 - box.left;
+      const half = card.offsetWidth / 2;
+      const left = Math.min(Math.max(cx, half + 4), box.width - half - 4);
+      card.style.left = `${left - half}px`;
+      card.style.top = `${at.top - box.top - card.offsetHeight - 14}px`;
+      card.style.setProperty('--pointer', `${cx - (left - half)}px`);
+      open = id;
+    };
+
+    svg.addEventListener('pointerover', (e) => {
+      if ((e as PointerEvent).pointerType === 'touch') return;
+      const stop = (e.target as Element).closest('.sw-metro__stop');
+      if (stop) show(stop);
+    });
+    svg.addEventListener('pointerout', (e) => {
+      if ((e as PointerEvent).pointerType === 'touch') return;
+      if ((e.target as Element).closest('.sw-metro__stop')) hide();
+    });
+    svg.addEventListener('focusin', (e) => {
+      const stop = (e.target as Element).closest('.sw-metro__stop');
+      if (stop) show(stop);
+    });
+    svg.addEventListener('focusout', hide);
+
+    // Touch: the first tap shows the card, a second tap (on the stop or the card) opens the essay.
+    svg.addEventListener('click', (e) => {
+      const stop = (e.target as Element).closest('.sw-metro__stop');
+      if (!stop || !matchMedia('(hover: none)').matches) return;
+      if (open !== (stop as HTMLElement).dataset.station) {
+        e.preventDefault();
+        show(stop);
+      }
+    });
+    wrap.querySelector('.sw-metro__cards')?.setAttribute('aria-hidden', 'true');
+    document.addEventListener('click', (e) => {
+      if (open && !(e.target as Element).closest('.sw-metro__stop, .sw-station')) hide();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hide();
+    });
+    wrap.querySelector('.sw-metro__scroll')?.addEventListener('scroll', hide, { passive: true });
+  }
+</script>
