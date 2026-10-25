@@ -12,7 +12,10 @@
     "preview": "astro preview",
     "check": "astro check",
     "new": "node scripts/new-post.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "dev:writing": "WRITING_HOME=1 astro dev",
+    "build:writing": "WRITING_HOME=1 astro build",
+    "check:writing": "WRITING_HOME=1 astro check --tsconfig tsconfig.writing.json"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.3",
